@@ -1,0 +1,72 @@
+# ==============================================================================
+# Git Ignore Configuration for Say Mahar (ဆေးမဟာ) Medisales POS
+# ==============================================================================
+
+# Python Bytecode & Optimization Caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Build & Distribution Artifacts (PyInstaller & Tailwind)
+build/
+dist/
+*.spec.bak
+*.egg-info/
+.eggs/
+
+# SQLite Databases & Lock Files (Production & Test Data)
+*.db
+*.db-wal
+*.db-shm
+*.db-journal
+*.sqlite
+*.sqlite3
+medisales.db*
+test_*.db*
+*_pre_restore_*.db
+
+# Temporary & Working Files
+screenshots/
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+
+# Frontend Node.js Dependencies & Logs
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Operating System Files
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# Editor / IDE Files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
