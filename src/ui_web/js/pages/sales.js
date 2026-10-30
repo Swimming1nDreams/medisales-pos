@@ -1,6 +1,11 @@
 let salesProducts = [];
 let salesCart = [];
 let salesReceived = 0;
+let salesDiscount = 0;
+let salesPaymentType = 'cash'; // 'cash' or 'credit'
+let salesSelectedCustomerId = '';
+let salesCustomers = [];
+let salesCustomerBalances = [];
 let salesTab = 'pos'; // 'pos' or 'history'
 let salesStart = '';
 let salesEnd = '';
@@ -32,6 +37,12 @@ async function renderSales(container) {
 
     if (salesTab === 'pos') {
         salesProducts = await callBackend('list_products');
+        try {
+            salesCustomers = await callBackend('list_customers');
+            salesCustomerBalances = await callBackend('get_customer_balances');
+        } catch(e) {
+            console.error("Failed to fetch customer data for POS:", e);
+        }
         _renderPosView(container);
     } else {
         await _renderHistoryView(container);
@@ -109,17 +120,17 @@ function _renderPosView(container) {
             </div>
 
             <!-- Right: POS Cart & Checkout Register -->
-            <div class="w-full lg:w-[410px] flex flex-col card flex-shrink-0 h-full overflow-hidden">
+            <div class="w-full lg:w-[420px] flex flex-col card flex-shrink-0 h-full overflow-hidden">
                 
                 <!-- Cart Header -->
-                <div class="px-3.5 py-2.5 border-b border-slate-200 bg-slate-50/80 flex justify-between items-center flex-shrink-0">
+                <div class="px-3.5 py-2 border-b border-slate-200 bg-slate-50/80 flex justify-between items-center flex-shrink-0">
                     <div class="flex items-center gap-2">
-                        <span class="font-bold text-slate-900 text-xs uppercase tracking-wide">${t('sales.cart_title', 'Current Customer Bill')}</span>
+                        <span class="font-bold text-slate-900 text-xs uppercase tracking-wide">${t('sales.cart_title', 'Current Bill')}</span>
                         <span id="sales-cart-badge" class="badge badge-neutral text-[10px]">0 lines</span>
                     </div>
                     <button class="text-xs text-rose-600 hover:text-rose-800 font-medium hover:underline flex items-center gap-1" onclick="salesConfirmClearCart()">
                         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                        ${t('sales.clear_cart', 'Clear Order')}
+                        ${t('sales.clear_cart', 'Clear')}
                     </button>
                 </div>
 
@@ -129,50 +140,120 @@ function _renderPosView(container) {
                 </div>
 
                 <!-- Cart Totals & Cash Register Drawer -->
-                <div class="border-t border-slate-200 bg-slate-50/90 p-3 space-y-2 flex-shrink-0">
+                <div class="border-t border-slate-200 bg-slate-50/90 p-3 space-y-2 flex-shrink-0 text-xs">
                     
-                    <!-- Breakdown row -->
-                    <div class="flex justify-between text-xs text-slate-600">
-                        <span>Total Items / Units:</span>
-                        <span id="sales-cart-units" class="font-mono font-bold text-slate-800">0 units</span>
+                    <!-- Subtotal & Units -->
+                    <div class="flex justify-between items-center text-slate-600">
+                        <span>${t('sales.subtotal', 'Subtotal')}: <span id="sales-cart-units" class="font-mono text-slate-500 font-semibold">(0 units)</span></span>
+                        <span id="sales-cart-subtotal" class="font-mono font-bold text-slate-800 text-sm">0 Ks</span>
                     </div>
 
-                    <!-- Grand Total Banner -->
-                    <div class="p-2.5 bg-white rounded-md border border-slate-200 flex justify-between items-baseline shadow-xs">
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-600">${t('sales.total_due', 'Total Due')}</span>
-                        <div id="sales-cart-total" data-val="0" class="text-2xl font-black font-mono text-teal-900 tabular-nums whitespace-nowrap">0 Ks</div>
+                    <!-- Quick Round-off & Discount Section -->
+                    <div class="p-2 rounded bg-amber-50/60 border border-amber-200/80 space-y-1.5">
+                        <div class="flex justify-between items-center">
+                            <span class="font-semibold text-amber-900 text-[11px] flex items-center gap-1">
+                                <svg class="w-3 h-3 text-amber-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                                ${t('sales.discount_roundoff', 'Round-off / Discount')}:
+                            </span>
+                            <div class="flex items-center gap-1">
+                                <input type="number" id="sales-discount-input" class="form-input text-xs font-mono font-bold w-20 py-0.5 text-right bg-white text-rose-700" placeholder="0" min="0" value="${salesDiscount || 0}" oninput="salesSetCustomDiscount(this.value)">
+                                <span class="text-[10px] text-amber-800 font-semibold">Ks</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 text-[10px]">
+                            <span class="text-amber-800 font-medium">Quick:</span>
+                            <button type="button" class="px-1.5 py-0.5 bg-white border border-amber-300 rounded hover:bg-amber-100 text-amber-900 font-mono font-medium" onclick="salesSetCustomDiscount(0)">0 Ks</button>
+                            <button type="button" class="px-1.5 py-0.5 bg-white border border-amber-300 rounded hover:bg-amber-100 text-amber-900 font-mono font-medium" onclick="salesRoundDiscount(500)" title="Round down to nearest 500 Ks">Round 500</button>
+                            <button type="button" class="px-1.5 py-0.5 bg-white border border-amber-300 rounded hover:bg-amber-100 text-amber-900 font-mono font-medium" onclick="salesRoundDiscount(1000)" title="Round down to nearest 1,000 Ks">Round 1,000</button>
+                        </div>
                     </div>
 
-                    <!-- Amount Tendered -->
-                    <div>
-                        <div class="flex justify-between items-center mb-1">
+                    <!-- Grand Net Total Due Banner -->
+                    <div class="p-2 bg-white rounded-md border border-slate-200 flex justify-between items-baseline shadow-xs">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-700">${t('sales.total_due', 'Net Total Due')}</span>
+                        <div id="sales-cart-total" data-subtotal="0" data-val="0" class="text-2xl font-black font-mono text-teal-900 tabular-nums whitespace-nowrap">0 Ks</div>
+                    </div>
+
+                    <!-- Payment Mode Switcher (Cash vs Credit) -->
+                    <div class="grid grid-cols-2 gap-1 p-0.5 bg-slate-200/80 rounded-md">
+                        <button type="button" class="py-1 px-2 text-xs font-bold rounded transition-colors flex items-center justify-center gap-1.5 ${salesPaymentType === 'cash' ? 'bg-white text-teal-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'}" onclick="salesSetPaymentType('cash')">
+                            <span>💵</span>
+                            <span>${t('sales.cash_mode', 'Cash Sale')}</span>
+                        </button>
+                        <button type="button" class="py-1 px-2 text-xs font-bold rounded transition-colors flex items-center justify-center gap-1.5 ${salesPaymentType === 'credit' ? 'bg-amber-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}" onclick="salesSetPaymentType('credit')">
+                            <span>📒</span>
+                            <span>${t('sales.credit_mode', 'Credit Sale')}</span>
+                        </button>
+                    </div>
+
+                    <!-- Mode 1: Cash Checkout Register -->
+                    <div id="sales-cash-drawer" class="${salesPaymentType === 'cash' ? '' : 'hidden'} space-y-1.5">
+                        <div class="flex justify-between items-center">
                             <label class="form-label mb-0 text-[11px]" for="sales-received">${t('sales.tendered', 'Amount Tendered (Kyat)')}</label>
                             <button type="button" class="text-[11px] text-teal-800 hover:underline font-semibold" onclick="salesExactAmount()">${t('sales.exact_cash', 'Exact Tender')}</button>
                         </div>
-                        <input type="number" id="sales-received" class="form-input text-sm font-bold font-mono text-slate-900 py-1.5" placeholder="0" min="0" oninput="salesCalcChange()" onkeydown="if(event.key==='Enter') salesCheckout()">
+                        <input type="number" id="sales-received" class="form-input text-sm font-bold font-mono text-slate-900 py-1" placeholder="0" min="0" oninput="salesCalcChange()" onkeydown="if(event.key==='Enter') salesCheckout()">
                         
                         <!-- Quick Cash Chips -->
-                        <div class="flex items-center justify-between text-[10px] text-slate-500 mt-1 mb-0.5">
-                            <span class="font-medium">Quick Cash Notes (+):</span>
-                            <span class="text-slate-400">Adds note to tender</span>
+                        <div class="flex items-center justify-between text-[10px] text-slate-500">
+                            <span class="font-medium">Quick Notes (+):</span>
+                            <div class="flex gap-1">
+                                <button type="button" class="px-2 py-0.5 text-[10px] font-mono bg-white border border-slate-300 rounded hover:bg-slate-100 text-slate-700 font-semibold" onclick="salesAddCash(1000)">+1,000</button>
+                                <button type="button" class="px-2 py-0.5 text-[10px] font-mono bg-white border border-slate-300 rounded hover:bg-slate-100 text-slate-700 font-semibold" onclick="salesAddCash(5000)">+5,000</button>
+                                <button type="button" class="px-2 py-0.5 text-[10px] font-mono bg-white border border-slate-300 rounded hover:bg-slate-100 text-slate-700 font-semibold" onclick="salesAddCash(10000)">+10,000</button>
+                            </div>
                         </div>
-                        <div class="flex gap-1 overflow-x-auto pb-0.5">
-                            <button type="button" class="px-2 py-0.5 text-[10px] font-mono bg-white border border-slate-300 rounded hover:bg-slate-100 text-slate-700 font-semibold whitespace-nowrap" onclick="salesAddCash(1000)" title="Add 1,000 Ks note">+1,000</button>
-                            <button type="button" class="px-2 py-0.5 text-[10px] font-mono bg-white border border-slate-300 rounded hover:bg-slate-100 text-slate-700 font-semibold whitespace-nowrap" onclick="salesAddCash(5000)" title="Add 5,000 Ks note">+5,000</button>
-                            <button type="button" class="px-2 py-0.5 text-[10px] font-mono bg-white border border-slate-300 rounded hover:bg-slate-100 text-slate-700 font-semibold whitespace-nowrap" onclick="salesAddCash(10000)" title="Add 10,000 Ks note">+10,000</button>
+
+                        <!-- Change Banner -->
+                        <div id="sales-change-banner" class="flex justify-between items-center px-3 py-1.5 rounded border border-slate-200 bg-white text-xs">
+                            <span class="font-semibold text-slate-600">${t('sales.change_due', 'Change Due:')}</span>
+                            <span id="sales-change" class="font-mono font-bold text-teal-800 tabular-nums whitespace-nowrap">0 Ks</span>
                         </div>
                     </div>
 
-                    <!-- Change Calculation Banner -->
-                    <div id="sales-change-banner" class="flex justify-between items-center px-3 py-1.5 rounded border border-slate-200 bg-white text-xs">
-                        <span class="font-semibold text-slate-600">${t('sales.change_due', 'Change Due:')}</span>
-                        <span id="sales-change" class="font-mono font-bold text-teal-800 tabular-nums whitespace-nowrap">0 Ks</span>
+                    <!-- Mode 2: Credit Checkout Drawer -->
+                    <div id="sales-credit-drawer" class="${salesPaymentType === 'credit' ? '' : 'hidden'} space-y-2 p-2 bg-amber-50/70 rounded border border-amber-200">
+                        <div class="flex items-center justify-between">
+                            <label class="form-label mb-0 text-[11px] font-bold text-amber-950">${t('cust.select_customer', 'Select Customer')} *</label>
+                            <button type="button" class="text-[10px] text-amber-900 font-bold hover:underline flex items-center gap-0.5" onclick="salesQuickAddCustomer()">
+                                + ${t('cust.add_new', 'New Customer')}
+                            </button>
+                        </div>
+                        <select id="sales-customer-select" class="form-select text-xs font-semibold py-1 bg-white" onchange="salesOnCustomerChange(this.value)">
+                            <option value="">-- ${t('cust.choose', 'Select Customer')} --</option>
+                            ${salesCustomers.filter(c => c.is_active).map(c => {
+                                const bal = salesCustomerBalances.find(b => b.customer_id === c.id);
+                                const debt = bal ? bal.outstanding_balance : 0;
+                                const debtStr = debt > 0 ? ` (Debt: ${formatMoney(debt)})` : '';
+                                return `<option value="${c.id}" ${salesSelectedCustomerId == c.id ? 'selected' : ''}>${escapeHtml(c.name)} - ${escapeHtml(c.phone || 'No phone')}${debtStr}</option>`;
+                            }).join('')}
+                        </select>
+
+                        <!-- Customer Debt Summary -->
+                        <div id="sales-customer-debt-info" class="text-[11px] space-y-1 bg-white p-2 rounded border border-amber-200">
+                            <div class="flex justify-between text-slate-600">
+                                <span>${t('cust.current_debt', 'Current Debt')}:</span>
+                                <span id="sales-curr-debt" class="font-mono font-bold text-slate-800">0 Ks</span>
+                            </div>
+                            <div class="flex justify-between items-center pt-1 border-t border-slate-100">
+                                <span>${t('cust.upfront_cash', 'Upfront Cash Paid')}:</span>
+                                <input type="number" id="sales-credit-upfront" class="form-input text-xs font-mono font-bold w-24 py-0.5 text-right" placeholder="0" min="0" value="0" oninput="salesCalcCredit()">
+                            </div>
+                            <div class="flex justify-between text-amber-900 font-semibold pt-1 border-t border-slate-100">
+                                <span>${t('cust.added_credit', 'Added to Credit Book')}:</span>
+                                <span id="sales-added-debt" class="font-mono font-bold text-amber-700">0 Ks</span>
+                            </div>
+                            <div class="flex justify-between font-bold text-rose-800 pt-1 border-t border-slate-200">
+                                <span>${t('cust.new_total_debt', 'New Total Debt')}:</span>
+                                <span id="sales-new-debt" class="font-mono font-bold">0 Ks</span>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Complete Sale Button -->
-                    <button id="sales-checkout-btn" class="btn btn-primary w-full py-2.5 text-xs font-bold shadow-xs flex items-center justify-center gap-1.5" onclick="salesCheckout()">
+                    <button id="sales-checkout-btn" class="btn ${salesPaymentType === 'credit' ? 'btn-warning bg-amber-600 hover:bg-amber-700 text-white' : 'btn-primary'} w-full py-2 text-xs font-bold shadow-xs flex items-center justify-center gap-1.5" onclick="salesCheckout()">
                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        <span>${t('sales.complete_sale', 'Complete Sale & Print (F2)')}</span>
+                        <span id="sales-checkout-btn-label">${salesPaymentType === 'credit' ? t('sales.record_credit_sale', 'Record to Credit Book (Enter)') : t('sales.complete_sale', 'Complete Sale & Print (F2)')}</span>
                     </button>
 
                 </div>
@@ -242,7 +323,6 @@ function _renderSalesProducts(query) {
                             ${p.current_stock} ${p.unit_measure || 'units'}
                         </span>
                     </div>
-                    <!-- Full untruncated product name with matching letters highlighted -->
                     <h4 class="font-bold text-slate-900 text-xs leading-snug group-hover:text-teal-800 break-words" title="${escapeHtml(p.name)}">
                         ${highlightedName}
                     </h4>
@@ -352,7 +432,7 @@ function _renderSalesCart() {
     const container = document.getElementById('sales-cart-items');
     if (!container) return;
     
-    let total = 0;
+    let subtotal = 0;
     let count = 0;
     
     if (salesCart.length === 0) {
@@ -366,7 +446,7 @@ function _renderSalesCart() {
     } else {
         container.innerHTML = salesCart.map((c, i) => {
             const lineTotal = c.qty * c.product.selling_price;
-            total += lineTotal;
+            subtotal += lineTotal;
             count += c.qty;
             return `
                 <div class="py-2 px-1.5 flex items-center justify-between gap-2 hover:bg-slate-50 rounded transition-colors group">
@@ -405,16 +485,154 @@ function _renderSalesCart() {
     if (badgeEl) badgeEl.textContent = `${salesCart.length} lines`;
 
     const unitsEl = document.getElementById('sales-cart-units');
-    if (unitsEl) unitsEl.textContent = `${count} units`;
+    if (unitsEl) unitsEl.textContent = `(${count} units)`;
+
+    const subtotalEl = document.getElementById('sales-cart-subtotal');
+    if (subtotalEl) subtotalEl.textContent = formatMoney(subtotal);
+
+    if (salesDiscount > subtotal) {
+        salesDiscount = subtotal;
+        const discInput = document.getElementById('sales-discount-input');
+        if (discInput) discInput.value = salesDiscount;
+    }
+
+    const netTotal = Math.max(0, subtotal - salesDiscount);
 
     const totalEl = document.getElementById('sales-cart-total');
     if (totalEl) {
-        totalEl.textContent = formatMoney(total);
-        totalEl.dataset.val = total;
+        totalEl.textContent = formatMoney(netTotal);
+        totalEl.dataset.val = netTotal;
+        totalEl.dataset.subtotal = subtotal;
     }
 
-    salesCalcChange();
+    if (salesPaymentType === 'cash') {
+        salesCalcChange();
+    } else {
+        salesCalcCredit();
+    }
 }
+
+window.salesSetCustomDiscount = function(val) {
+    const disc = parseInt(val) || 0;
+    const totalEl = document.getElementById('sales-cart-total');
+    const subtotal = totalEl ? (parseFloat(totalEl.dataset.subtotal) || 0) : 0;
+    salesDiscount = Math.max(0, Math.min(disc, subtotal));
+    const discInput = document.getElementById('sales-discount-input');
+    if (discInput && discInput.value != salesDiscount) {
+        discInput.value = salesDiscount;
+    }
+    _renderSalesCart();
+};
+
+window.salesRoundDiscount = function(roundTo) {
+    const totalEl = document.getElementById('sales-cart-total');
+    const subtotal = totalEl ? (parseFloat(totalEl.dataset.subtotal) || 0) : 0;
+    if (subtotal <= 0) return;
+    const rem = subtotal % roundTo;
+    salesDiscount = rem;
+    const discInput = document.getElementById('sales-discount-input');
+    if (discInput) discInput.value = salesDiscount;
+    _renderSalesCart();
+};
+
+window.salesSetPaymentType = function(type) {
+    salesPaymentType = type;
+    const cashDrawer = document.getElementById('sales-cash-drawer');
+    const creditDrawer = document.getElementById('sales-credit-drawer');
+    const checkoutBtn = document.getElementById('sales-checkout-btn');
+    const checkoutLabel = document.getElementById('sales-checkout-btn-label');
+
+    if (type === 'cash') {
+        if (cashDrawer) cashDrawer.classList.remove('hidden');
+        if (creditDrawer) creditDrawer.classList.add('hidden');
+        if (checkoutBtn) {
+            checkoutBtn.className = "btn btn-primary w-full py-2 text-xs font-bold shadow-xs flex items-center justify-center gap-1.5";
+        }
+        if (checkoutLabel) {
+            checkoutLabel.textContent = t('sales.complete_sale', 'Complete Sale & Print (F2)');
+        }
+        salesCalcChange();
+    } else {
+        if (cashDrawer) cashDrawer.classList.add('hidden');
+        if (creditDrawer) creditDrawer.classList.remove('hidden');
+        if (checkoutBtn) {
+            checkoutBtn.className = "btn btn-warning bg-amber-600 hover:bg-amber-700 text-white w-full py-2 text-xs font-bold shadow-xs flex items-center justify-center gap-1.5";
+        }
+        if (checkoutLabel) {
+            checkoutLabel.textContent = t('sales.record_credit_sale', 'Record to Credit Book (Enter)');
+        }
+        salesCalcCredit();
+    }
+    _renderPosView(document.getElementById('content-area'));
+};
+
+window.salesOnCustomerChange = function(cid) {
+    salesSelectedCustomerId = cid;
+    salesCalcCredit();
+};
+
+window.salesCalcCredit = function() {
+    const totalEl = document.getElementById('sales-cart-total');
+    const netTotal = parseFloat(totalEl ? totalEl.dataset.val : 0) || 0;
+    const upfrontInput = document.getElementById('sales-credit-upfront');
+    const upfront = parseFloat(upfrontInput ? upfrontInput.value : 0) || 0;
+
+    let currDebt = 0;
+    if (salesSelectedCustomerId) {
+        const bal = salesCustomerBalances.find(b => b.customer_id == salesSelectedCustomerId);
+        if (bal) currDebt = bal.outstanding_balance;
+    }
+
+    const addedDebt = Math.max(0, netTotal - upfront);
+    const newDebt = currDebt + addedDebt;
+
+    const currDebtEl = document.getElementById('sales-curr-debt');
+    if (currDebtEl) currDebtEl.textContent = formatMoney(currDebt);
+
+    const addedDebtEl = document.getElementById('sales-added-debt');
+    if (addedDebtEl) addedDebtEl.textContent = formatMoney(addedDebt);
+
+    const newDebtEl = document.getElementById('sales-new-debt');
+    if (newDebtEl) newDebtEl.textContent = formatMoney(newDebt);
+};
+
+window.salesQuickAddCustomer = function() {
+    const html = `
+        <div class="space-y-3 text-xs">
+            <div>
+                <label class="form-label">${t('col.customer_name', 'Customer Name')} *</label>
+                <input type="text" id="quick-cust-name" class="form-input text-xs" placeholder="e.g. ဒေါ်သန်းသန်း" required autofocus>
+            </div>
+            <div>
+                <label class="form-label">${t('col.phone', 'Phone Number')}</label>
+                <input type="text" id="quick-cust-phone" class="form-input text-xs" placeholder="09xxxxxxxxx">
+            </div>
+            <div>
+                <label class="form-label">${t('col.address', 'Address / Street')}</label>
+                <input type="text" id="quick-cust-address" class="form-input text-xs" placeholder="e.g. အမှတ် ၄၅၊ သရက်တောလမ်း">
+            </div>
+        </div>
+    `;
+
+    openModal(t('cust.add_title', 'Register New Customer'), html, async () => {
+        const name = document.getElementById('quick-cust-name').value.trim();
+        const phone = document.getElementById('quick-cust-phone').value.trim();
+        const address = document.getElementById('quick-cust-address').value.trim();
+        if (!name) throw "Customer name is required.";
+
+        const res = await callBackend('create_customer', name, phone, address, 'Added from POS');
+        showToast(`Customer ${name} registered!`);
+        salesCustomers = await callBackend('list_customers');
+        salesCustomerBalances = await callBackend('get_customer_balances');
+        if (res && res.customer_id) {
+            salesSelectedCustomerId = String(res.customer_id);
+        }
+        _renderPosView(document.getElementById('content-area'));
+    }, {
+        saveText: t('btn.save', 'Add Customer'),
+        maxWidth: 'max-w-sm'
+    });
+};
 
 window.salesCalcChange = function() {
     const receivedEl = document.getElementById('sales-received');
@@ -475,6 +693,7 @@ window.salesConfirmClearCart = function() {
         "Are you sure you want to remove all items from the current sales order?",
         () => {
             salesCart = [];
+            salesDiscount = 0;
             const rEl = document.getElementById('sales-received');
             if (rEl) rEl.value = '';
             _renderSalesCart();
@@ -491,16 +710,29 @@ window.salesCheckout = async function() {
         return;
     }
     
-    const total = parseFloat(document.getElementById('sales-cart-total').dataset.val);
-    let received = parseFloat(document.getElementById('sales-received').value);
-    
-    if (isNaN(received) || received < total) {
-        if (isNaN(received) || received === 0) {
-            received = total; // Auto-assume exact cash if not entered
-        } else {
-            showToast(`${t('sales.insufficient_cash', 'Amount tendered')} (${formatMoney(received)}) < (${formatMoney(total)}).`, "error");
+    const totalEl = document.getElementById('sales-cart-total');
+    const subtotal = parseFloat(totalEl ? totalEl.dataset.subtotal : 0) || 0;
+    const netTotal = parseFloat(totalEl ? totalEl.dataset.val : 0) || 0;
+    let received = 0;
+    let customerInfo = null;
+
+    if (salesPaymentType === 'cash') {
+        received = parseFloat(document.getElementById('sales-received')?.value);
+        if (isNaN(received) || received < netTotal) {
+            if (isNaN(received) || received === 0) {
+                received = netTotal; // Auto-assume exact cash if not entered
+            } else {
+                showToast(`${t('sales.insufficient_cash', 'Amount tendered')} (${formatMoney(received)}) < (${formatMoney(netTotal)}).`, "error");
+                return;
+            }
+        }
+    } else { // credit
+        if (!salesSelectedCustomerId) {
+            showToast(t('cust.select_required', 'Please select a customer for credit recording.'), "warning");
             return;
         }
+        received = parseFloat(document.getElementById('sales-credit-upfront')?.value) || 0;
+        customerInfo = salesCustomers.find(c => c.id == salesSelectedCustomerId);
     }
     
     const items = salesCart.map(c => ({
@@ -525,17 +757,38 @@ window.salesCheckout = async function() {
     
     try {
         const cartCopy = [...salesCart];
-        const changeDue = received - total;
+        const appliedDiscount = salesDiscount;
         
-        await callBackend('create_sale', ref, JSON.stringify(items), received);
-        showToast(`Sale ${ref} completed! Change: ${formatMoney(changeDue)}`, "success");
-        
-        // Show commercial receipt dialog
-        _showReceiptModal(ref, cartCopy, total, received, changeDue);
+        await callBackend('create_sale', 
+            ref, 
+            JSON.stringify(items), 
+            Number(received), 
+            Number(appliedDiscount), 
+            String(salesPaymentType), 
+            String(salesSelectedCustomerId || '')
+        );
+
+        if (salesPaymentType === 'cash') {
+            const changeDue = received - netTotal;
+            showToast(`Sale ${ref} completed! Change: ${formatMoney(changeDue)}`, "success");
+            _showReceiptModal(ref, cartCopy, subtotal, appliedDiscount, netTotal, received, changeDue, 'cash', null);
+        } else {
+            const creditAdded = Math.max(0, netTotal - received);
+            showToast(`Credit Sale ${ref} recorded for ${customerInfo ? customerInfo.name : 'Customer'}!`, "success");
+            salesCustomerBalances = await callBackend('get_customer_balances');
+            const newBal = salesCustomerBalances.find(b => b.customer_id == salesSelectedCustomerId);
+            _showReceiptModal(ref, cartCopy, subtotal, appliedDiscount, netTotal, received, creditAdded, 'credit', {
+                ...customerInfo,
+                newDebt: newBal ? newBal.outstanding_balance : creditAdded
+            });
+        }
 
         salesCart = [];
+        salesDiscount = 0;
         const rEl = document.getElementById('sales-received');
         if (rEl) rEl.value = '';
+        const dEl = document.getElementById('sales-discount-input');
+        if (dEl) dEl.value = '0';
         _renderSalesCart();
 
         salesProducts = await callBackend('list_products');
@@ -548,26 +801,32 @@ window.salesCheckout = async function() {
             checkoutBtn.disabled = false;
             checkoutBtn.innerHTML = `
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>${t('sales.complete_sale', 'Complete Sale (Enter)')}</span>
+                <span>${salesPaymentType === 'credit' ? t('sales.record_credit_sale', 'Record to Credit Book (Enter)') : t('sales.complete_sale', 'Complete Sale & Print (F2)')}</span>
             `;
         }
     }
 };
 
-function _showReceiptModal(ref, items, total, received, change) {
+function _showReceiptModal(ref, items, subtotal, discount, netTotal, received, changeOrCredit, paymentType, customerInfo) {
     const dateStr = new Date().toLocaleString();
+    const isCredit = paymentType === 'credit';
     const html = `
         <div class="space-y-3 text-slate-800 text-xs">
             <div class="text-center pb-2.5 border-b border-slate-200">
                 <h4 class="font-bold text-sm tracking-wide text-slate-900">${t('sales.receipt_title', 'SAY MAHAR PHARMACY & RETAIL')}</h4>
-                <p class="text-[11px] text-slate-500">${t('sales.receipt_subtitle', 'Official Cash Sales Receipt')}</p>
+                <p class="text-[11px] text-slate-500">${isCredit ? t('cust.credit_invoice', 'Credit Sale Receipt') : t('sales.receipt_subtitle', 'Official Cash Sales Receipt')}</p>
                 <div class="mt-2 text-[11px] font-mono text-slate-600 flex justify-between px-1">
                     <span>${t('col.invoice', 'Invoice')}: ${ref}</span>
                     <span>${dateStr}</span>
                 </div>
+                ${customerInfo ? `
+                    <div class="mt-1 text-[11px] bg-amber-50 border border-amber-200 rounded p-1.5 text-left text-amber-950">
+                        <span class="font-bold">${t('col.customer_name', 'Customer')}:</span> ${escapeHtml(customerInfo.name)} ${customerInfo.phone ? `(${escapeHtml(customerInfo.phone)})` : ''}
+                    </div>
+                ` : ''}
             </div>
 
-            <div class="max-h-56 overflow-y-auto divide-y divide-slate-100">
+            <div class="max-h-52 overflow-y-auto divide-y divide-slate-100">
                 ${items.map(it => `
                     <div class="py-1.5 flex justify-between items-center text-xs">
                         <div class="pr-2 min-w-0">
@@ -579,19 +838,47 @@ function _showReceiptModal(ref, items, total, received, change) {
                 `).join('')}
             </div>
 
-            <div class="pt-2.5 border-t border-slate-200 space-y-1 font-mono text-xs">
-                <div class="flex justify-between font-bold text-sm text-slate-900">
-                    <span>${t('sales.total_due', 'TOTAL AMOUNT:')}</span>
-                    <span class="whitespace-nowrap">${formatMoney(total)}</span>
-                </div>
+            <div class="pt-2 border-t border-slate-200 space-y-1 font-mono text-xs">
                 <div class="flex justify-between text-slate-600">
-                    <span>${t('sales.tendered', 'Cash Tendered:')}</span>
-                    <span class="whitespace-nowrap">${formatMoney(received)}</span>
+                    <span>${t('sales.subtotal', 'Subtotal')}:</span>
+                    <span class="whitespace-nowrap">${formatMoney(subtotal)}</span>
                 </div>
-                <div class="flex justify-between font-bold text-teal-800 text-sm">
-                    <span>${t('sales.change_due', 'CHANGE DUE:')}</span>
-                    <span class="whitespace-nowrap">${formatMoney(change)}</span>
+                ${discount > 0 ? `
+                    <div class="flex justify-between text-rose-600 font-semibold">
+                        <span>${t('sales.discount_amount', 'Discount / Round-off')}:</span>
+                        <span class="whitespace-nowrap">-${formatMoney(discount)}</span>
+                    </div>
+                ` : ''}
+                <div class="flex justify-between font-bold text-sm text-slate-900 pt-1 border-t border-slate-100">
+                    <span>${t('sales.total_due', 'TOTAL AMOUNT:')}</span>
+                    <span class="whitespace-nowrap">${formatMoney(netTotal)}</span>
                 </div>
+
+                ${!isCredit ? `
+                    <div class="flex justify-between text-slate-600">
+                        <span>${t('sales.tendered', 'Cash Tendered:')}</span>
+                        <span class="whitespace-nowrap">${formatMoney(received)}</span>
+                    </div>
+                    <div class="flex justify-between font-bold text-teal-800 text-sm">
+                        <span>${t('sales.change_due', 'CHANGE DUE:')}</span>
+                        <span class="whitespace-nowrap">${formatMoney(changeOrCredit)}</span>
+                    </div>
+                ` : `
+                    <div class="flex justify-between text-slate-600">
+                        <span>${t('cust.upfront_cash', 'Upfront Cash Paid')}:</span>
+                        <span class="whitespace-nowrap">${formatMoney(received)}</span>
+                    </div>
+                    <div class="flex justify-between font-bold text-amber-800">
+                        <span>${t('cust.added_credit', 'Added to Credit Book')}:</span>
+                        <span class="whitespace-nowrap">+${formatMoney(changeOrCredit)}</span>
+                    </div>
+                    ${customerInfo && customerInfo.newDebt !== undefined ? `
+                        <div class="flex justify-between font-bold text-rose-800 pt-1 border-t border-amber-200 bg-amber-50/70 p-1 rounded">
+                            <span>${t('cust.new_total_debt', 'Total Customer Debt')}:</span>
+                            <span class="whitespace-nowrap">${formatMoney(customerInfo.newDebt)}</span>
+                        </div>
+                    ` : ''}
+                `}
             </div>
 
             <div class="text-center pt-2 text-[11px] text-slate-500 italic">
@@ -607,7 +894,7 @@ function _showReceiptModal(ref, items, total, received, change) {
         </div>
     `;
 
-    openModal(`${t('sales.receipt_subtitle', 'Sales Receipt')} • ${ref}`, html, null, {
+    openModal(`${isCredit ? t('cust.credit_invoice', 'Credit Sale') : t('sales.receipt_subtitle', 'Sales Receipt')} • ${ref}`, html, null, {
         maxWidth: 'max-w-md',
         cancelText: t('btn.done', 'Done / Close')
     });
@@ -654,26 +941,43 @@ async function _renderHistoryView(container) {
                         <tr>
                             <th class="th">${t('col.date_time', 'Date & Time')}</th>
                             <th class="th">${t('col.receipt', 'Receipt #')}</th>
+                            <th class="th">${t('col.type', 'Mode / Customer')}</th>
                             <th class="th text-center">${t('col.qty', 'Items')}</th>
-                            <th class="th text-right">${t('col.total', 'Total Amount')}</th>
+                            <th class="th text-right">${t('col.total', 'Net Total')}</th>
                             <th class="th text-right">${t('col.paid', 'Tendered')}</th>
-                            <th class="th text-right">${t('col.balance', 'Change')}</th>
+                            <th class="th text-right">${t('col.balance', 'Change / Credit')}</th>
                             <th class="th text-center">${t('col.status', 'Status')}</th>
                             <th class="th text-right">${t('col.actions', 'Actions')}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 bg-white">
-                        ${sales.length === 0 ? `<tr><td colspan="8" class="py-12 text-center text-slate-400 text-xs">${t('msg.no_data', 'No sales transactions recorded in this period.')}</td></tr>` : ''}
+                        ${sales.length === 0 ? `<tr><td colspan="9" class="py-12 text-center text-slate-400 text-xs">${t('msg.no_data', 'No sales transactions recorded in this period.')}</td></tr>` : ''}
                         ${sales.map(s => {
                             const isVoid = s.status === 'Voided';
+                            const isCredit = s.payment_type === 'credit';
                             return `
                                 <tr class="tr-hover ${isVoid ? 'opacity-60 bg-slate-50/60' : ''}">
                                     <td class="td text-xs font-mono text-slate-600">${s.date_time}</td>
                                     <td class="td font-mono font-bold text-xs ${isVoid ? 'text-slate-400 line-through' : 'text-teal-900'}">${s.reference}</td>
+                                    <td class="td text-xs">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="badge ${isCredit ? 'badge-warning' : 'badge-neutral'} text-[10px]">${isCredit ? 'အကြွေး' : 'ငွေသား'}</span>
+                                            ${s.customer_name ? `<span class="font-bold text-slate-800 truncate max-w-[120px]">${escapeHtml(s.customer_name)}</span>` : ''}
+                                        </div>
+                                    </td>
                                     <td class="td text-center font-mono">${s.items_count}</td>
-                                    <td class="td-num font-bold ${isVoid ? 'text-slate-400' : 'text-slate-900'}">${formatMoney(s.total_amount)}</td>
+                                    <td class="td-num font-bold ${isVoid ? 'text-slate-400' : 'text-slate-900'}">
+                                        ${formatMoney(s.total_amount)}
+                                        ${s.discount_amount > 0 ? `<span class="block text-[10px] text-rose-600">-${formatMoney(s.discount_amount)}</span>` : ''}
+                                    </td>
                                     <td class="td-num">${formatMoney(s.amount_received)}</td>
-                                    <td class="td-num">${formatMoney(s.change_given)}</td>
+                                    <td class="td-num">
+                                        ${isCredit ? `
+                                            <span class="font-bold text-amber-700">+${formatMoney(s.credit_amount || 0)}</span>
+                                        ` : `
+                                            <span class="text-teal-800">${formatMoney(s.change_given)}</span>
+                                        `}
+                                    </td>
                                     <td class="td text-center">
                                         <span class="badge ${isVoid ? 'badge-danger' : 'badge-success'}">${isVoid ? t('status.voided', 'Voided') : t('status.completed', 'Completed')}</span>
                                     </td>

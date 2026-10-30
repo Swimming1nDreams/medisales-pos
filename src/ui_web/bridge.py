@@ -27,14 +27,25 @@ class FrontendBridge(QObject):
 
     # --- Sales ---
     @Slot(str, str, float, result=str)
-    def create_sale(self, reference, items_json, amount_received):
+    @Slot(str, str, float, float, str, str, result=str)
+    def create_sale(self, reference, items_json, amount_received, discount_amount=0, payment_type="cash", customer_id=""):
         try:
             items = json.loads(items_json)
             # items: [{'product_id': int, 'quantity': int, 'unit_price': float}]
-            sale_id = self.services['sales_service'].create_sale(reference, items, int(amount_received))
+            cid = int(customer_id) if customer_id and str(customer_id).isdigit() else None
+            sale_id = self.services['sales_service'].create_sale(
+                reference, 
+                items, 
+                int(amount_received),
+                discount_amount=int(discount_amount),
+                payment_type=payment_type,
+                customer_id=cid
+            )
             self.dataChanged.emit("dashboard")
             self.dataChanged.emit("sales")
             self.dataChanged.emit("inventory")
+            if cid:
+                self.dataChanged.emit("customers")
             return self._success({"sale_id": sale_id})
         except Exception as e:
             return self._error(e)
@@ -177,6 +188,59 @@ class FrontendBridge(QObject):
                 ORDER BY date ASC
             ''', (supplier_id,)).fetchall()
             return self._success([dict(r) for r in rows])
+        except Exception as e:
+            return self._error(e)
+
+    # --- Customers & Credit Ledger ---
+    @Slot(result=str)
+    def list_customers(self):
+        try:
+            custs = self.services['customer_service'].list_customers(include_inactive=True)
+            return self._success(custs)
+        except Exception as e:
+            return self._error(e)
+
+    @Slot(str, str, str, str, result=str)
+    def create_customer(self, name, phone, address, notes):
+        try:
+            cid = self.services['customer_service'].create_customer(name, phone, address, notes)
+            self.dataChanged.emit("customers")
+            return self._success({"customer_id": cid})
+        except Exception as e:
+            return self._error(e)
+
+    @Slot(int, str, str, str, str, bool, result=str)
+    def update_customer(self, customer_id, name, phone, address, notes, is_active):
+        try:
+            self.services['customer_service'].update_customer(customer_id, name, phone, address, notes, is_active)
+            self.dataChanged.emit("customers")
+            return self._success()
+        except Exception as e:
+            return self._error(e)
+
+    @Slot(result=str)
+    def get_customer_balances(self):
+        try:
+            bals = self.services['customer_service'].get_customer_balances()
+            return self._success(bals)
+        except Exception as e:
+            return self._error(e)
+
+    @Slot(int, float, str, result=str)
+    def record_customer_payment(self, customer_id, amount, notes=""):
+        try:
+            ref = self.services['customer_service'].record_debt_repayment(customer_id, int(amount), notes)
+            self.dataChanged.emit("customers")
+            self.dataChanged.emit("dashboard")
+            return self._success({"reference": ref})
+        except Exception as e:
+            return self._error(e)
+
+    @Slot(int, result=str)
+    def get_customer_statement(self, customer_id):
+        try:
+            stmt = self.services['customer_service'].get_customer_statement(customer_id)
+            return self._success(stmt)
         except Exception as e:
             return self._error(e)
 

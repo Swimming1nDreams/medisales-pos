@@ -50,6 +50,7 @@ class MigrationsManager:
             sql_script = f.read()
             
         conn = self.db_manager.get_connection()
+        conn.execute("PRAGMA foreign_keys = OFF;")
         try:
             # executescript implicitly commits any pending transaction, 
             # so we manually wrap the script in BEGIN and COMMIT to ensure it rolls back on failure
@@ -65,3 +66,5 @@ class MigrationsManager:
             if conn.in_transaction:
                 conn.rollback()
             raise
+        finally:
+            conn.execute("PRAGMA foreign_keys = ON;")

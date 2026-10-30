@@ -17,6 +17,7 @@ from src.services.finance_service import FinanceService
 from src.services.dashboard_service import DashboardService
 from src.services.report_service import ReportService
 from src.services.reconciliation_service import ReconciliationService
+from src.services.customer_service import CustomerService
 from src.services.export_service import ExportService
 
 from src.ui.main_window_web import MainWindowWeb
@@ -69,6 +70,7 @@ def main():
         dashboard_service = DashboardService(db_manager, finance_service)
         report_service = ReportService(db_manager)
         reconciliation_service = ReconciliationService(db_manager)
+        customer_service = CustomerService(db_manager)
         
         services = {
             'db_manager': db_manager,
@@ -76,6 +78,7 @@ def main():
             'product_service': product_service,
             'sales_service': sales_service,
             'supplier_service': supplier_service,
+            'customer_service': customer_service,
             'purchase_service': purchase_service,
             'expense_service': expense_service,
             'finance_service': finance_service,

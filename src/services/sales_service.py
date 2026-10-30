@@ -12,7 +12,15 @@ class SalesService:
             raise ValueError("Fractional Kyat amounts are not permitted.")
         return int(val)
 
-    def create_sale(self, reference: str, items: List[Dict[str, Any]], amount_received: int) -> int:
+    def create_sale(
+        self, 
+        reference: str, 
+        items: List[Dict[str, Any]], 
+        amount_received: int,
+        discount_amount: int = 0,
+        payment_type: str = 'cash',
+        customer_id: Any = None
+    ) -> int:
         reference = reference.strip()
         if not reference:
             raise ValueError("Sale reference is required.")
@@ -23,9 +31,16 @@ class SalesService:
         if amount_received < 0:
             raise ValueError("Amount received cannot be negative.")
 
+        discount_amount = self._ensure_integer(discount_amount)
+        if discount_amount < 0:
+            raise ValueError("Discount amount cannot be negative.")
+
+        if payment_type not in ('cash', 'credit'):
+            raise ValueError("Payment type must be 'cash' or 'credit'.")
+
         with self.db.transaction() as conn:
-            # First pass: calculate total amount and validate basic structure
-            total_amount = 0
+            # First pass: calculate subtotal amount and validate basic structure
+            subtotal = 0
             for item in items:
                 qty = self._ensure_integer(item['quantity'])
                 price = self._ensure_integer(item['unit_price'])
@@ -33,18 +48,43 @@ class SalesService:
                     raise ValueError("Sale quantity must be greater than zero.")
                 if price < 0:
                     raise ValueError("Unit price cannot be negative.")
-                total_amount += (qty * price)
+                subtotal += (qty * price)
 
-            if amount_received < total_amount:
-                raise ValueError("Amount received is less than total sale amount.")
+            if discount_amount > subtotal:
+                raise ValueError("Discount cannot exceed sale subtotal.")
 
-            change_given = amount_received - total_amount
+            total_amount = subtotal - discount_amount
+
+            if payment_type == 'cash':
+                if amount_received < total_amount:
+                    raise ValueError("Amount received is less than total sale amount.")
+                change_given = amount_received - total_amount
+                credit_amount = 0
+                cid = customer_id
+            else:  # credit
+                if not customer_id:
+                    raise ValueError("A customer must be selected to record a credit sale.")
+                cust = conn.execute("SELECT id, is_active FROM customers WHERE id = ?", (customer_id,)).fetchone()
+                if not cust or not cust['is_active']:
+                    raise ValueError(f"Customer #{customer_id} does not exist or is inactive.")
+                
+                cid = customer_id
+                # In credit sales: amount_received is upfront cash payment (if any)
+                if amount_received >= total_amount:
+                    change_given = amount_received - total_amount
+                    credit_amount = 0
+                else:
+                    change_given = 0
+                    credit_amount = total_amount - amount_received
+
             now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
             try:
                 s_cursor = conn.execute(
-                    "INSERT INTO sales (reference, date_time, total_amount, amount_received, change_given, status) VALUES (?, ?, ?, ?, ?, 'Completed')",
-                    (reference, now, total_amount, amount_received, change_given)
+                    """INSERT INTO sales 
+                    (reference, date_time, subtotal, discount_amount, total_amount, amount_received, change_given, payment_type, customer_id, credit_amount, status) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Completed')""",
+                    (reference, now, subtotal, discount_amount, total_amount, amount_received, change_given, payment_type, cid, credit_amount)
                 )
                 sale_id = s_cursor.lastrowid
             except sqlite3.IntegrityError as e:

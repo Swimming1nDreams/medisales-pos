@@ -14,11 +14,12 @@ function getNavGroups() {
             ]
         },
         {
-            title: t("nav.group.procurement", "PROCUREMENT & EXPENSES"),
-            badge: t("badge.procurement", "PROCUREMENT"),
+            title: t("nav.group.procurement", "PROCUREMENT & CUSTOMERS"),
+            badge: t("badge.procurement", "LEDGER"),
             items: [
                 { id: 'purchases', label: t('nav.purchases', 'Purchases & Receiving'), badge: '', icon: `<line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>` },
                 { id: 'suppliers', label: t('nav.suppliers', 'Suppliers Ledger'), badge: '', icon: `<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>` },
+                { id: 'customers', label: t('nav.customers', 'Customer Credit'), badge: '', icon: `<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>` },
                 { id: 'expenses', label: t('nav.expenses', 'Operating Expenses'), badge: '', icon: `<line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>` },
             ]
         },
@@ -506,6 +507,7 @@ async function loadPageData(pageId) {
             case 'inventory': await renderInventory(contentArea); break;
             case 'purchases': await renderPurchases(contentArea); break;
             case 'suppliers': await renderSuppliers(contentArea); break;
+            case 'customers': await renderCustomers(contentArea); break;
             case 'expenses': await renderExpenses(contentArea); break;
             case 'reports': await renderReports(contentArea); break;
             case 'settings': await renderSettings(contentArea); break;

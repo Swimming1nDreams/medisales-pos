@@ -37,6 +37,11 @@ def supplier_service(db_manager):
     return SupplierService(db_manager)
 
 @pytest.fixture
+def customer_service(db_manager):
+    from src.services.customer_service import CustomerService
+    return CustomerService(db_manager)
+
+@pytest.fixture
 def purchase_service(db_manager):
     from src.services.purchase_service import PurchaseService
     return PurchaseService(db_manager)

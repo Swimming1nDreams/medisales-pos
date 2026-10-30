@@ -253,10 +253,13 @@ class ReportService:
     def get_sales(self, start_date: str = None, end_date: str = None, include_voided: bool = True) -> List[Dict[str, Any]]:
         conn = self.db.get_connection()
         query = '''
-            SELECT s.id, s.reference, s.date_time, s.total_amount, s.amount_received, s.change_given, s.status,
+            SELECT s.id, s.reference, s.date_time, s.subtotal, s.discount_amount, s.total_amount, 
+                   s.amount_received, s.change_given, s.payment_type, s.customer_id, s.credit_amount, s.status,
+                   c.name as customer_name,
                    COUNT(si.id) as items_count
             FROM sales s
             LEFT JOIN sale_items si ON s.id = si.sale_id
+            LEFT JOIN customers c ON s.customer_id = c.id
             WHERE 1=1
         '''
         params = []
