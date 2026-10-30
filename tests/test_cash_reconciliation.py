@@ -248,8 +248,8 @@ def test_settings_reconciliation_runtime_ui(qapp, recon_services):
     run_js(window, "navigate('settings');")
 
     rendered = False
-    for _ in range(30):
-        val = run_js(window, "window._renderedPage === 'settings' && document.getElementById('denom-small-change') !== null;")
+    for _ in range(50):
+        val = run_js(window, "window._renderedPage === 'settings' && document.getElementById('denom-small-change') !== null && document.getElementById('denom-10000') !== null;")
         if val is True:
             rendered = True
             break
