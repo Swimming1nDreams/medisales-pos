@@ -7,26 +7,10 @@ async function renderInventory(container) {
     const headerActions = document.getElementById('header-actions');
     if (headerActions) {
         headerActions.innerHTML = `
-            <div class="flex items-center gap-2">
-                <button class="btn btn-secondary text-xs" onclick="${inventoryTab === 'stock' ? 'exportInventoryValuationExcel()' : 'exportMedicineBatchesExcel()'}">
-                    <svg class="w-3.5 h-3.5 text-emerald-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    <span>${t('btn.export_excel', 'Export to Excel')}</span>
-                </button>
-                <div class="inline-flex rounded-lg border border-slate-200 bg-slate-100 p-0.5">
-                    <button class="px-3 py-1 text-xs font-semibold rounded whitespace-nowrap transition-colors ${inventoryTab === 'stock' ? 'bg-white text-teal-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'}" onclick="switchInventoryTab('stock')">
-                        ${t('inv.tab_stock', 'Stock on Hand')}
-                    </button>
-                    <button class="px-3 py-1 text-xs font-semibold rounded whitespace-nowrap transition-colors ${inventoryTab === 'all_batches' ? 'bg-white text-teal-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'}" onclick="switchInventoryTab('all_batches')">
-                        ${t('inv.filter_all_batches', 'All Medicine Batches')}
-                    </button>
-                    <button class="px-3 py-1 text-xs font-semibold rounded whitespace-nowrap transition-colors ${inventoryTab === 'expiring_soon' ? 'bg-white text-amber-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'}" onclick="switchInventoryTab('expiring_soon')">
-                        ${t('inv.filter_expiring_soon', 'Expiring Soon')}
-                    </button>
-                    <button class="px-3 py-1 text-xs font-semibold rounded whitespace-nowrap transition-colors ${inventoryTab === 'expired' ? 'bg-white text-rose-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'}" onclick="switchInventoryTab('expired')">
-                        ${t('inv.filter_expired', 'Expired Batches')}
-                    </button>
-                </div>
-            </div>
+            <button class="btn btn-secondary text-xs" onclick="${inventoryTab === 'stock' ? 'exportInventoryValuationExcel()' : 'exportMedicineBatchesExcel()'}">
+                <svg class="w-3.5 h-3.5 text-emerald-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <span>${t('btn.export_excel', 'Export to Excel')}</span>
+            </button>
         `;
     }
 
@@ -99,6 +83,7 @@ function _renderStockTbody() {
     const qtyBadge = document.getElementById('inventory-stock-qty-badge');
     if (qtyBadge) qtyBadge.textContent = `${totalQty.toLocaleString('en-US')} ${t('col.stock', 'Units in Stock')}`;
 
+    const tfootEl = document.getElementById('inventory-stock-tfoot'); if (tfootEl) { tfootEl.style.display = filtered.length === 0 ? 'none' : ''; }
     const tfootTotalEl = document.getElementById('inventory-stock-tfoot-total');
     if (tfootTotalEl) tfootTotalEl.textContent = `${t('inv.tab_stock', 'Total Stock On Hand')} (${filtered.length})`;
     const tfootQtyEl = document.getElementById('inventory-stock-tfoot-qty');
@@ -113,7 +98,7 @@ function _renderStockTbody() {
                     </div>
                     <div class="text-sm font-semibold text-slate-700">${t('msg.no_data', 'No stock records found')}</div>
                     <p class="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-4">
-                        ${inventorySearch || inventoryLowStockOnly ? 'No inventory items match your current search or low-stock filter.' : 'There are currently no products tracked in inventory.'}
+                        ${inventorySearch || inventoryLowStockOnly ? t('inv.empty_filter', 'No inventory items match your current search or low-stock filter.') : t('inv.empty_catalog', 'There are currently no products tracked in inventory.')}
                     </p>
                     ${(inventorySearch || inventoryLowStockOnly) ? `
                         <button class="btn btn-sm btn-secondary inline-flex items-center gap-1.5" onclick="clearInventoryFilters()">
@@ -174,7 +159,9 @@ function _renderStockTable(container) {
     const lowCount = inventoryData.filter(it => it.current_stock <= (it.min_stock_level || 5)).length;
 
     container.innerHTML = `
-        <div class="card flex flex-col h-full">
+        <div class="flex flex-col h-full gap-2.5">
+            ${_renderInventoryTabs()}
+            <div class="card flex flex-col flex-1 min-h-0">
             
             <!-- Toolbar -->
             <div class="p-3 border-b border-slate-200 bg-white flex flex-wrap items-center justify-between gap-2.5">
@@ -214,7 +201,7 @@ function _renderStockTable(container) {
                     <tbody id="inventory-stock-tbody" class="divide-y divide-slate-100 bg-white">
                         <!-- Rendered by _renderStockTbody -->
                     </tbody>
-                    <tfoot class="bg-slate-50 font-bold border-t-2 border-slate-300">
+                    <tfoot id="inventory-stock-tfoot" class="bg-slate-50 font-bold border-t-2 border-slate-300">
                         <tr>
                             <td id="inventory-stock-tfoot-total" class="px-4 py-2.5 text-xs uppercase text-slate-700">${t('inv.tab_stock', 'Total Stock On Hand')} (${inventoryData.length})</td>
                             <td id="inventory-stock-tfoot-qty" class="px-4 py-2.5 text-right font-mono text-xs text-slate-900">${totalQty.toLocaleString('en-US')}</td>
@@ -261,7 +248,7 @@ function _renderBatchTbody() {
                     </div>
                     <div class="text-sm font-semibold text-slate-700">${t('msg.no_data', 'No medicine batches found')}</div>
                     <p class="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-4">
-                        ${inventoryTab === 'expiring_soon' ? 'No batches are currently expiring within 30 days.' : (inventoryTab === 'expired' ? 'No expired batches recorded in system.' : 'No medicine batches match your filter.')}
+                        ${inventoryTab === 'expiring_soon' ? t('inv.empty_expiring', 'No batches are currently expiring within 90 days.') : (inventoryTab === 'expired' ? t('inv.empty_expired', 'No expired batches recorded in system.') : t('inv.empty_batches', 'No medicine batches match your filter.'))}
                     </p>
                     ${inventorySearch ? `
                         <button class="btn btn-sm btn-secondary inline-flex items-center gap-1.5" onclick="clearInventoryFilters()">
@@ -305,7 +292,9 @@ function _renderBatchTable(container) {
     const totalBatchUnits = inventoryData.reduce((acc, b) => acc + (b.remaining_quantity ?? b.current_qty ?? 0), 0);
 
     container.innerHTML = `
-        <div class="card flex flex-col h-full">
+        <div class="flex flex-col h-full gap-2.5">
+            ${_renderInventoryTabs()}
+            <div class="card flex flex-col flex-1 min-h-0">
             
             <!-- Toolbar -->
             <div class="p-3 border-b border-slate-200 bg-white flex flex-wrap items-center justify-between gap-2.5">
@@ -336,7 +325,7 @@ function _renderBatchTable(container) {
                     <tbody id="inventory-batch-tbody" class="divide-y divide-slate-100 bg-white">
                         <!-- Rendered by _renderBatchTbody -->
                     </tbody>
-                    <tfoot class="bg-slate-50 font-bold border-t-2 border-slate-300">
+                    <tfoot id="inventory-stock-tfoot" class="bg-slate-50 font-bold border-t-2 border-slate-300">
                         <tr>
                             <td id="inventory-batch-tfoot-total" class="px-4 py-2.5 text-xs uppercase text-slate-700">${t('inv.filter_all_batches', 'Total Medicine Batches')} (${inventoryData.length})</td>
                             <td class="px-4 py-2.5 font-mono text-xs text-slate-500">-</td>

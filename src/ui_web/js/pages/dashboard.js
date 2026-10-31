@@ -60,7 +60,7 @@ async function renderDashboard(container) {
                         <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700">${t('rep.tab_pnl', "Today's Financial Performance")}</h3>
                         <span class="text-[11px] text-slate-400 font-mono">(${data.date || new Date().toISOString().split('T')[0]})</span>
                     </div>
-                    <span class="text-[11px] text-slate-500 font-medium">${t('set.concurrency', 'Automatic Real-Time Reconciliation')}</span>
+                    <span class="text-[11px] text-slate-500 font-medium">${t('dash.reconciliation_note', 'Automatic Real-Time Reconciliation')}</span>
                 </div>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -97,17 +97,17 @@ async function renderDashboard(container) {
                         </div>
                         <div class="kpi-value text-slate-800">${formatMoney(expenses)}</div>
                         <div class="kpi-sub">
-                            <span>${t('exp.notice', 'Utilities, salaries & rent')}</span>
+                            <span>${t('dash.expenses_sub', 'Utilities, salaries & rent')}</span>
                         </div>
                     </div>
 
                     <!-- Net Operating Profit -->
-                    <div class="kpi-card ${netProfit < 0 ? 'bg-rose-50/70 border-rose-300/80' : 'bg-emerald-50/70 border-emerald-300/80'}">
+                    <div class="kpi-card ${netProfit > 0 ? 'bg-emerald-50/70 border-emerald-300/80' : (netProfit < 0 ? 'bg-rose-50/70 border-rose-300/80' : 'bg-white border-slate-200')}">
                         <div class="flex items-center justify-between">
-                            <span class="kpi-title ${netProfit < 0 ? 'text-rose-900 font-bold' : 'text-emerald-900 font-bold'}">${t('rep.kpi_net_profit', 'Net Operating Profit')}</span>
-                            <span class="badge ${netProfit >= 0 ? 'badge-success' : 'badge-danger'} text-[10px] font-bold">${netProfit >= 0 ? t('set.recon_surplus', 'Surplus') : t('set.recon_shortage', 'Deficit')}</span>
+                            <span class="kpi-title ${netProfit > 0 ? 'text-emerald-900 font-bold' : (netProfit < 0 ? 'text-rose-900 font-bold' : 'text-slate-600 font-semibold')}">${t('rep.kpi_net_profit', 'Net Operating Profit')}</span>
+                            <span class="badge ${netProfit > 0 ? 'badge-success' : (netProfit < 0 ? 'badge-danger' : 'badge-neutral')} text-[10px] font-bold">${netProfit > 0 ? t('set.recon_surplus', 'Surplus') : (netProfit < 0 ? t('set.recon_shortage', 'Deficit') : t('dash.balanced', 'Balanced'))}</span>
                         </div>
-                        <div class="kpi-value ${netProfit >= 0 ? 'text-emerald-800' : 'text-rose-700'}">${formatMoney(netProfit)}</div>
+                        <div class="kpi-value ${netProfit > 0 ? 'text-emerald-800' : (netProfit < 0 ? 'text-rose-700' : 'text-slate-800')}">${formatMoney(netProfit)}</div>
                         <div class="kpi-sub">
                             <span>${t('rep.kpi_net_profit', 'Gross profit minus expenses')}</span>
                         </div>
@@ -125,7 +125,7 @@ async function renderDashboard(container) {
                         <div>
                             <span class="text-[11px] font-semibold text-slate-600 uppercase tracking-wider block">${t('dash.inventory_valuation', 'Total Inventory Valuation')}</span>
                             <div class="text-lg font-bold font-mono text-slate-900 mt-0.5">${formatMoney(invValue)}</div>
-                            <span class="text-[11px] text-slate-500 mt-0.5 block">FEFO (Meds) & WAC (General)</span>
+                            <span class="text-[11px] text-slate-500 mt-0.5 block">${t('dash.valuation_basis', 'FEFO (Meds) & WAC (General)')}</span>
                         </div>
                         <button class="btn btn-sm btn-secondary text-slate-700" onclick="navigate('inventory')">${t('dash.view_inventory', 'View Stock')}</button>
                     </div>
@@ -136,7 +136,7 @@ async function renderDashboard(container) {
                             <div class="text-lg font-bold font-mono ${supplierDue > 0 ? 'text-amber-800' : 'text-slate-900'} mt-0.5">${formatMoney(supplierDue)}</div>
                             <span class="text-[11px] text-slate-500 mt-0.5 block">${t('nav.suppliers', 'Pending vendor settlement')}</span>
                         </div>
-                        <button class="btn btn-sm btn-secondary text-slate-700" onclick="navigate('suppliers')">${t('nav.suppliers', 'Suppliers')}</button>
+                        <button class="btn btn-sm btn-secondary text-slate-700" onclick="navigate('suppliers')">${t('dash.btn_view_suppliers', 'View Payables')}</button>
                     </div>
 
                     <div class="card p-3.5 flex items-center justify-between">
@@ -145,7 +145,7 @@ async function renderDashboard(container) {
                             <div class="text-lg font-bold font-mono text-slate-900 mt-0.5">${formatNumber(activeProducts)} ${t('status.active', 'Active Items')}</div>
                             <span class="text-[11px] text-slate-500 mt-0.5 block">${t('prod.type_all', 'Medicines & general products')}</span>
                         </div>
-                        <button class="btn btn-sm btn-secondary text-slate-700" onclick="navigate('products')">${t('nav.products', 'Products')}</button>
+                        <button class="btn btn-sm btn-secondary text-slate-700" onclick="navigate('products')">${t('dash.btn_view_products', 'View Catalog')}</button>
                     </div>
 
                 </div>
@@ -180,7 +180,7 @@ async function renderDashboard(container) {
                             <h4 class="text-xs font-bold text-slate-900">${t('inv.tab_batches', 'FEFO Expiry Tracking')}</h4>
                             <p class="text-[11px] text-slate-500 mt-0.5">
                                 ${expiredCount > 0 ? `<span class="font-bold text-rose-700">${expiredCount} ${t('status.expired', 'expired')}</span> • ` : ''}
-                                ${expiringSoonCount > 0 ? `<span class="font-semibold text-amber-700">${expiringSoonCount} ${t('status.expiring_soon', 'expiring within 90 days')}</span>` : '0 batches expiring soon'}
+                                ${expiringSoonCount > 0 ? `<span class="font-semibold text-amber-700">${expiringSoonCount} ${t('status.expiring_soon', 'expiring within 90 days')}</span>` : t('dash.no_expiring_soon', '0 batches expiring soon')}
                             </p>
                         </div>
                     </div>

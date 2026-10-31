@@ -15,7 +15,7 @@ async function renderProducts(container) {
                 </button>
                 <button class="btn btn-secondary text-xs" onclick="openCategoryModal()">
                     <svg class="w-3.5 h-3.5 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h7"></path></svg>
-                    <span>${t('prod.field_category', 'Categories')}</span>
+                    <span>${t('prod.btn_categories', 'Categories')}</span>
                 </button>
                 <button class="btn btn-primary text-xs" onclick="openProductModal()">
                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
@@ -93,7 +93,7 @@ function _renderProductsTbody() {
                     </div>
                     <div class="text-sm font-semibold text-slate-700">${t('msg.no_data', 'No matching products found')}</div>
                     <p class="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-4">
-                        No products match your current search terms or category/type filters.
+                        ${t('prod.empty_desc', 'No products match your current search terms or category/type filters.')}
                     </p>
                     ${(currentSearch || currentCategoryFilter || currentTypeFilter !== 'all') ? `
                         <button class="btn btn-sm btn-secondary inline-flex items-center gap-1.5" onclick="clearProductFilters()">

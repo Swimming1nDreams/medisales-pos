@@ -27,7 +27,7 @@ function _renderCustomersTbody() {
         });
 
     const countHeader = document.getElementById('customers-count-header');
-    if (countHeader) countHeader.innerHTML = `Showing <strong>${filtered.length}</strong> of ${allCustomers.length} accounts`;
+    if (countHeader) countHeader.innerHTML = `${t('col.showing_accounts', 'Showing {count} of {total} accounts').replace('{count}', filtered.length).replace('{total}', allCustomers.length)}`;
 
     if (filtered.length === 0) {
         tbody.innerHTML = `
@@ -153,7 +153,7 @@ async function renderCustomers(container) {
                     </label>
 
                     <div id="customers-count-header" class="text-xs text-slate-500 font-mono">
-                        Showing <strong>${allCustomers.length}</strong> accounts
+                        ${t('col.showing_accounts', 'Showing {count} of {total} accounts').replace('{count}', allCustomers.length).replace('{total}', allCustomers.length)}
                     </div>
                 </div>
 

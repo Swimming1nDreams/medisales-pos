@@ -18,7 +18,7 @@ function _renderSuppliersTbody() {
         });
 
     const countHeader = document.getElementById('suppliers-count-header');
-    if (countHeader) countHeader.innerHTML = `Showing <strong>${filtered.length}</strong> of ${allSuppliers.length}`;
+    if (countHeader) countHeader.innerHTML = `${t('col.showing_suppliers', 'Showing {count} of {total} suppliers').replace('{count}', filtered.length).replace('{total}', allSuppliers.length)}`;
 
     if (filtered.length === 0) {
         tbody.innerHTML = `
@@ -139,7 +139,7 @@ async function renderSuppliers(container) {
                     </div>
 
                     <div id="suppliers-count-header" class="flex items-center gap-2 text-xs text-slate-500">
-                        <span>Showing <strong>${allSuppliers.length}</strong> of ${allSuppliers.length}</span>
+                        <span>${t('col.showing_suppliers', 'Showing {count} of {total} suppliers').replace('{count}', allSuppliers.length).replace('{total}', allSuppliers.length)}</span>
                     </div>
                 </div>
 
