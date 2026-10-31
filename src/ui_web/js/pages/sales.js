@@ -169,12 +169,12 @@ function _renderPosView(container) {
                     </div>
 
                     <!-- Grand Net Total Due Banner -->
-                    <div class="p-3 bg-gradient-to-r from-teal-50/90 to-emerald-50/90 rounded-xl border border-teal-200/90 flex justify-between items-center shadow-xs">
+                    <div class="p-3.5 bg-gradient-to-r from-emerald-600 via-teal-700 to-teal-800 rounded-xl border border-emerald-500 text-white flex justify-between items-center shadow-md">
                         <div>
-                            <span class="text-xs font-bold uppercase tracking-wider text-teal-900 block">${t('sales.total_due', 'Net Total Due')}</span>
-                            <span class="text-[10px] text-teal-700/80 font-medium">${t('sales.payable_amount', 'Payable Amount')}</span>
+                            <span class="text-xs font-black uppercase tracking-wider text-emerald-100 block">${t('sales.total_due', 'Net Total Due')}</span>
+                            <span class="text-[10px] text-teal-200 font-medium">${t('sales.payable_amount', 'Payable Amount')}</span>
                         </div>
-                        <div id="sales-cart-total" data-subtotal="0" data-val="0" class="text-2xl font-black font-mono text-teal-900 tabular-nums whitespace-nowrap">0 Ks</div>
+                        <div id="sales-cart-total" data-subtotal="0" data-val="0" class="text-3xl font-black font-mono text-white tabular-nums whitespace-nowrap drop-shadow-sm">0 Ks</div>
                     </div>
 
                     <!-- Payment Mode Switcher (Cash vs Credit) -->
@@ -197,13 +197,13 @@ function _renderPosView(container) {
                         </div>
                         <input type="number" id="sales-received" class="form-input text-sm font-bold font-mono text-slate-900 py-1" placeholder="0" min="0" oninput="salesCalcChange()" onkeydown="if(event.key==='Enter') salesCheckout()">
                         
-                        <!-- Quick Cash Chips -->
+                        <!-- Quick Cash Chips (Banknote Colors: Blue=1,000, Rose=5,000, Purple=10,000) -->
                         <div class="flex items-center justify-between text-[10px] text-slate-500">
                             <span class="font-medium">Quick Notes (+):</span>
-                            <div class="flex gap-1">
-                                <button type="button" class="px-2 py-0.5 text-[10px] font-mono bg-white border border-slate-300 rounded-md hover:bg-slate-100 text-slate-700 font-bold active:scale-95 transition-all" onclick="salesAddCash(1000)">+1,000</button>
-                                <button type="button" class="px-2 py-0.5 text-[10px] font-mono bg-white border border-slate-300 rounded-md hover:bg-slate-100 text-slate-700 font-bold active:scale-95 transition-all" onclick="salesAddCash(5000)">+5,000</button>
-                                <button type="button" class="px-2 py-0.5 text-[10px] font-mono bg-white border border-slate-300 rounded-md hover:bg-slate-100 text-slate-700 font-bold active:scale-95 transition-all" onclick="salesAddCash(10000)">+10,000</button>
+                            <div class="flex gap-1.5">
+                                <button type="button" class="px-2.5 py-1 text-[10px] font-mono bg-blue-50 border border-blue-300 rounded-md hover:bg-blue-100 text-blue-900 font-bold shadow-xs active:scale-95 transition-all" onclick="salesAddCash(1000)">+1,000</button>
+                                <button type="button" class="px-2.5 py-1 text-[10px] font-mono bg-rose-50 border border-rose-300 rounded-md hover:bg-rose-100 text-rose-900 font-bold shadow-xs active:scale-95 transition-all" onclick="salesAddCash(5000)">+5,000</button>
+                                <button type="button" class="px-2.5 py-1 text-[10px] font-mono bg-purple-50 border border-purple-300 rounded-md hover:bg-purple-100 text-purple-900 font-bold shadow-xs active:scale-95 transition-all" onclick="salesAddCash(10000)">+10,000</button>
                             </div>
                         </div>
 
@@ -254,7 +254,7 @@ function _renderPosView(container) {
                     </div>
 
                     <!-- Complete Sale Button -->
-                    <button id="sales-checkout-btn" class="btn ${salesPaymentType === 'credit' ? 'btn-warning bg-amber-600 hover:bg-amber-700 text-white' : 'btn-primary'} w-full py-2.5 text-xs font-bold shadow-xs flex items-center justify-center gap-1.5" onclick="salesCheckout()">
+                    <button id="sales-checkout-btn" class="btn ${salesPaymentType === 'credit' ? 'bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white border-amber-600 shadow-md' : 'bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white border-emerald-600 shadow-md'} w-full py-3 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all" onclick="salesCheckout()">
                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
                         <span id="sales-checkout-btn-label">${salesPaymentType === 'credit' ? t('sales.record_credit_sale', 'Record to Credit Book (Enter)') : t('sales.complete_sale', 'Complete Sale & Print (F2)')}</span>
                     </button>

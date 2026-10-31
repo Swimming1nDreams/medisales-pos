@@ -9,15 +9,15 @@ async function renderProducts(container) {
     if (headerActions) {
         headerActions.innerHTML = `
             <div class="flex items-center gap-2">
-                <button class="btn btn-secondary text-xs" onclick="exportProductsExcel()">
+                <button class="btn btn-secondary text-xs border-emerald-300 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 font-semibold" onclick="exportProductsExcel()">
                     <svg class="w-3.5 h-3.5 text-emerald-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     <span>${t('btn.export_excel', 'Export to Excel')}</span>
                 </button>
-                <button class="btn btn-secondary text-xs" onclick="openCategoryModal()">
-                    <svg class="w-3.5 h-3.5 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h7"></path></svg>
+                <button class="btn btn-secondary text-xs border-indigo-200 text-indigo-800 bg-indigo-50 hover:bg-indigo-100 font-semibold" onclick="openCategoryModal()">
+                    <svg class="w-3.5 h-3.5 text-indigo-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h7"></path></svg>
                     <span>${t('prod.btn_categories', 'Categories')}</span>
                 </button>
-                <button class="btn btn-primary text-xs" onclick="openProductModal()">
+                <button class="btn btn-primary text-xs bg-gradient-to-r from-teal-700 to-emerald-700 hover:from-teal-800 hover:to-emerald-800 text-white font-bold shadow-sm" onclick="openProductModal()">
                     <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     <span>${t('prod.add_button', 'New Product')}</span>
                 </button>
@@ -169,34 +169,42 @@ function _renderProductsTbody() {
                 <td class="td">
                     <div class="font-bold text-slate-900 text-xs leading-snug break-words" title="${escapeHtml(p.name)}">${highlightedName}</div>
                     <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                        <span class="text-[10px] text-slate-500">${t('col.unit', 'Unit')}: ${escapeHtml(p.unit_measure || 'piece')}</span>
+                        <span class="text-[10px] text-slate-500 font-medium">${t('col.unit', 'Unit')}: <strong class="text-slate-700">${escapeHtml(p.unit_measure || 'piece')}</strong></span>
                         <span class="text-slate-300">•</span>
                         ${p.is_medicine ? 
-                            `<span class="badge badge-teal text-[9px] py-0">${t('prod.type_medicine', 'Medicine (FEFO)')}</span>` : 
-                            `<span class="badge badge-neutral text-[9px] py-0">${t('prod.type_general', 'General Goods')}</span>`}
+                            `<span class="badge badge-teal text-[9px] py-0 font-bold">💊 ${t('prod.type_medicine', 'Medicine (FEFO)')}</span>` : 
+                            `<span class="badge badge-indigo text-[9px] py-0 font-bold">📦 ${t('prod.type_general', 'General Goods')}</span>`}
                     </div>
                     ${packagings.length > 0 ? `
                         <div class="flex flex-wrap items-center gap-1 mt-1 text-[10px]">
-                            <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200 font-medium">
+                            <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-300 font-medium">
                                 1 ${escapeHtml(p.unit_measure)}: ${formatMoney(p.selling_price)}
                             </span>
-                            ${packagings.map(pkg => `
-                                <span class="px-2 py-0.5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 font-bold" title="1 ${escapeHtml(pkg.unit_name)} = ${pkg.conversion_factor} ${escapeHtml(p.unit_measure)}">
-                                    1 ${escapeHtml(pkg.unit_name)} [${pkg.conversion_factor}]: ${formatMoney(pkg.selling_price)}
-                                </span>
-                            `).join('')}
+                            ${packagings.map(pkg => {
+                                const isStrip = pkg.unit_name.includes('ကတ်') || pkg.unit_name.toLowerCase().includes('strip');
+                                const isBox = pkg.unit_name.includes('ဗူး') || pkg.unit_name.includes('ဘူး') || pkg.unit_name.toLowerCase().includes('box');
+                                const isCarton = pkg.unit_name.includes('ဖာ') || pkg.unit_name.toLowerCase().includes('carton');
+                                const colorClass = isStrip ? 'bg-sky-50 text-sky-900 border-sky-300' : (isBox ? 'bg-teal-50 text-teal-900 border-teal-300' : (isCarton ? 'bg-amber-50 text-amber-900 border-amber-300' : 'bg-purple-50 text-purple-900 border-purple-300'));
+                                return `
+                                    <span class="px-2 py-0.5 rounded-md border font-bold ${colorClass}" title="1 ${escapeHtml(pkg.unit_name)} = ${pkg.conversion_factor} ${escapeHtml(p.unit_measure)}">
+                                        1 ${escapeHtml(pkg.unit_name)} [${pkg.conversion_factor}]: ${formatMoney(pkg.selling_price)}
+                                    </span>
+                                `;
+                            }).join('')}
                         </div>
                     ` : ''}
                 </td>
-                <td class="td text-xs text-slate-700">
-                    ${highlightedCat}
+                <td class="td text-xs">
+                    <span class="badge badge-purple text-[10px] font-medium">${highlightedCat}</span>
                 </td>
-                <td class="td-num font-bold text-slate-900 text-xs">
+                <td class="td-num font-black text-emerald-900 text-xs">
                     ${formatMoney(p.selling_price)}
                 </td>
                 <td class="td-num">
-                    <span class="font-bold text-xs ${isLow ? 'text-amber-800' : 'text-slate-800'}">${p.current_stock}</span>
-                    <span class="text-[10px] text-slate-400 block" title="${escapeHtml(formatSmartStock(p.current_stock, p.unit_measure, packagings))}">Min: ${p.min_stock_level || 0}</span>
+                    <span class="badge ${p.current_stock === 0 ? 'badge-danger font-black' : (isLow ? 'badge-warning font-bold' : 'badge-success font-bold')} text-xs font-mono">
+                        ${p.current_stock}
+                    </span>
+                    <span class="text-[10px] text-slate-400 block mt-0.5" title="${escapeHtml(formatSmartStock(p.current_stock, p.unit_measure, packagings))}">Min: ${p.min_stock_level || 0}</span>
                 </td>
                 <td class="td text-center">
                     <span class="badge ${p.is_active ? 'badge-success' : 'badge-neutral'} text-[10px]">
@@ -204,8 +212,8 @@ function _renderProductsTbody() {
                     </span>
                 </td>
                 <td class="td text-right whitespace-nowrap space-x-1">
-                    <button class="btn btn-sm btn-secondary py-0.5 text-xs" onclick="editProduct(${p.id})">${t('btn.edit', 'Edit')}</button>
-                    <button class="btn btn-sm ${p.is_active ? 'btn-danger' : 'btn-success'} py-0.5 text-xs" onclick="confirmToggleProduct(${p.id}, ${!p.is_active})">
+                    <button class="btn btn-sm btn-secondary text-indigo-700 border-indigo-200 hover:bg-indigo-50 py-0.5 text-xs font-semibold" onclick="editProduct(${p.id})">${t('btn.edit', 'Edit')}</button>
+                    <button class="btn btn-sm ${p.is_active ? 'btn-danger' : 'btn-success'} py-0.5 text-xs font-semibold" onclick="confirmToggleProduct(${p.id}, ${!p.is_active})">
                         ${p.is_active ? t('btn.delete', 'Disable') : t('btn.add', 'Enable')}
                     </button>
                 </td>

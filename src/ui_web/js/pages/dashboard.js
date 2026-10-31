@@ -155,62 +155,70 @@ async function renderDashboard(container) {
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     
                     <!-- Today's Revenue -->
-                    <div class="kpi-card border-slate-200">
+                    <div class="kpi-card border-t-4 border-t-emerald-500 bg-gradient-to-b from-emerald-50/30 via-white to-white border-slate-200 shadow-sm">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2">
-                                <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-xs">$</div>
-                                <span class="kpi-title">${t('dash.revenue_today', 'Sales Revenue')}</span>
+                                <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs shadow-xs">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                                </div>
+                                <span class="kpi-title text-slate-600">${t('dash.revenue_today', 'Sales Revenue')}</span>
                             </div>
-                            <span class="badge badge-success text-[10px]">${salesCount} ${t('sales.cart_items', 'sales')}</span>
+                            <span class="badge badge-success text-[10px] font-bold">${salesCount} ${t('sales.cart_items', 'sales')}</span>
                         </div>
-                        <div class="kpi-value text-slate-900">${formatMoney(revenue)}</div>
+                        <div class="kpi-value text-emerald-950 font-black">${formatMoney(revenue)}</div>
                         <div class="kpi-sub">
-                            <span>${t('dash.val_cogs_clean', 'Stock Acquisition Cost')}: ${formatMoney(cogs)}</span>
+                            <span class="text-slate-600">${t('dash.val_cogs_clean', 'Stock Acquisition Cost')}: <span class="font-semibold text-slate-800">${formatMoney(cogs)}</span></span>
                         </div>
                     </div>
 
                     <!-- Gross Profit -->
-                    <div class="kpi-card border-slate-200">
+                    <div class="kpi-card border-t-4 border-t-teal-500 bg-gradient-to-b from-teal-50/30 via-white to-white border-slate-200 shadow-sm">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2">
-                                <div class="w-7 h-7 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center font-bold text-xs">%</div>
-                                <span class="kpi-title">${t('dash.gross_profit_today', 'Gross Profit')}</span>
+                                <div class="w-8 h-8 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center font-bold text-xs shadow-xs">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                                </div>
+                                <span class="kpi-title text-slate-600">${t('dash.gross_profit_today', 'Gross Profit')}</span>
                             </div>
-                            <span class="badge badge-teal text-[10px]">${marginPct}%</span>
+                            <span class="badge badge-teal text-[10px] font-bold">${marginPct}%</span>
                         </div>
-                        <div class="kpi-value text-teal-800">${formatMoney(grossProfit)}</div>
+                        <div class="kpi-value text-teal-900 font-black">${formatMoney(grossProfit)}</div>
                         <div class="kpi-sub">
-                            <span>${t('dash.val_gross_clean', 'Revenue minus product costs')}</span>
+                            <span class="text-slate-600">${t('dash.val_gross_clean', 'Revenue minus product costs')}</span>
                         </div>
                     </div>
 
                     <!-- Operating Expenses -->
-                    <div class="kpi-card border-slate-200">
+                    <div class="kpi-card border-t-4 border-t-amber-500 bg-gradient-to-b from-amber-50/30 via-white to-white border-slate-200 shadow-sm">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2">
-                                <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center font-bold text-xs">-</div>
-                                <span class="kpi-title">${t('nav.expenses', 'Operating Expenses')}</span>
+                                <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-xs shadow-xs">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                                </div>
+                                <span class="kpi-title text-slate-600">${t('nav.expenses', 'Operating Expenses')}</span>
                             </div>
-                            <span class="badge ${expenses > 0 ? 'badge-warning' : 'badge-neutral'} text-[10px]">${t('rep.date_today', 'Today')}</span>
+                            <span class="badge ${expenses > 0 ? 'badge-warning font-bold' : 'badge-neutral'} text-[10px]">${t('rep.date_today', 'Today')}</span>
                         </div>
-                        <div class="kpi-value text-slate-800">${formatMoney(expenses)}</div>
+                        <div class="kpi-value text-amber-950 font-black">${formatMoney(expenses)}</div>
                         <div class="kpi-sub">
-                            <span>${t('dash.expenses_sub', 'Utilities, salaries & rent')}</span>
+                            <span class="text-slate-600">${t('dash.expenses_sub', 'Utilities, salaries & rent')}</span>
                         </div>
                     </div>
 
                     <!-- Net Operating Profit -->
-                    <div class="kpi-card ${netProfit > 0 ? 'bg-emerald-50/70 border-emerald-300/80' : (netProfit < 0 ? 'bg-rose-50/70 border-rose-300/80' : 'bg-white border-slate-200')}">
+                    <div class="kpi-card ${netProfit > 0 ? 'border-t-4 border-t-emerald-600 bg-gradient-to-b from-emerald-50/60 via-white to-white border-emerald-300' : (netProfit < 0 ? 'border-t-4 border-t-rose-600 bg-gradient-to-b from-rose-50/60 via-white to-white border-rose-300' : 'border-t-4 border-t-slate-400 bg-white border-slate-200')} shadow-sm">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2">
-                                <div class="w-7 h-7 rounded-lg ${netProfit > 0 ? 'bg-emerald-100 text-emerald-800' : (netProfit < 0 ? 'bg-rose-100 text-rose-800' : 'bg-slate-100 text-slate-700')} flex items-center justify-center font-bold text-xs">=</div>
-                                <span class="kpi-title ${netProfit > 0 ? 'text-emerald-900 font-bold' : (netProfit < 0 ? 'text-rose-900 font-bold' : 'text-slate-600 font-semibold')}">${t('rep.kpi_net_profit', 'Net Operating Profit')}</span>
+                                <div class="w-8 h-8 rounded-xl ${netProfit > 0 ? 'bg-emerald-100 text-emerald-800' : (netProfit < 0 ? 'bg-rose-100 text-rose-800' : 'bg-slate-100 text-slate-700')} flex items-center justify-center font-bold text-xs shadow-xs">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                </div>
+                                <span class="kpi-title ${netProfit > 0 ? 'text-emerald-950 font-bold' : (netProfit < 0 ? 'text-rose-950 font-bold' : 'text-slate-600 font-semibold')}">${t('rep.kpi_net_profit', 'Net Operating Profit')}</span>
                             </div>
                             <span class="badge ${netProfit > 0 ? 'badge-success' : (netProfit < 0 ? 'badge-danger' : 'badge-neutral')} text-[10px] font-bold">${netProfit > 0 ? t('set.recon_surplus', 'Surplus') : (netProfit < 0 ? t('set.recon_shortage', 'Deficit') : t('dash.balanced', 'Balanced'))}</span>
                         </div>
-                        <div class="kpi-value ${netProfit > 0 ? 'text-emerald-800' : (netProfit < 0 ? 'text-rose-700' : 'text-slate-800')}">${formatMoney(netProfit)}</div>
+                        <div class="kpi-value ${netProfit > 0 ? 'text-emerald-800 font-black' : (netProfit < 0 ? 'text-rose-700 font-black' : 'text-slate-800')}">${formatMoney(netProfit)}</div>
                         <div class="kpi-sub">
-                            <span>${t('dash.val_net_clean', 'Net cash profit after all expenses')}</span>
+                            <span class="text-slate-600">${t('dash.val_net_clean', 'Net cash profit after all expenses')}</span>
                         </div>
                     </div>
 
@@ -222,46 +230,46 @@ async function renderDashboard(container) {
                 <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">${t('nav.group.finance', 'Store Balances & Working Capital')}</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     
-                    <div class="card p-4 flex items-center justify-between">
+                    <div class="card p-4 flex items-center justify-between border-l-4 border-l-teal-600 bg-gradient-to-r from-teal-50/20 to-white shadow-sm">
                         <div class="flex items-start gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <div class="w-10 h-10 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-xs">
                                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                             </div>
                             <div>
                                 <span class="text-[11px] font-semibold text-slate-600 uppercase tracking-wider block">${t('dash.inventory_valuation', 'Total Inventory Valuation')}</span>
-                                <div class="text-lg font-bold font-mono text-slate-900 mt-0.5">${formatMoney(invValue)}</div>
+                                <div class="text-lg font-black font-mono text-teal-950 mt-0.5">${formatMoney(invValue)}</div>
                                 <span class="text-[11px] text-slate-500 mt-0.5 block">${t('dash.val_inv_clean', 'Total Stock on Hand Value')}</span>
                             </div>
                         </div>
-                        <button class="btn btn-sm btn-secondary text-slate-700" onclick="navigate('inventory')">${t('dash.view_inventory', 'View Stock')}</button>
+                        <button class="btn btn-sm btn-secondary text-teal-900 border-teal-200 bg-white hover:bg-teal-50" onclick="navigate('inventory')">${t('dash.view_inventory', 'View Stock')}</button>
                     </div>
 
-                    <div class="card p-4 flex items-center justify-between">
+                    <div class="card p-4 flex items-center justify-between border-l-4 border-l-amber-500 bg-gradient-to-r from-amber-50/20 to-white shadow-sm">
                         <div class="flex items-start gap-3">
-                            <div class="w-10 h-10 rounded-xl ${supplierDue > 0 ? 'bg-amber-50 text-amber-700' : 'bg-slate-50 text-slate-600'} flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <div class="w-10 h-10 rounded-xl ${supplierDue > 0 ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'} flex items-center justify-center flex-shrink-0 mt-0.5 shadow-xs">
                                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                             </div>
                             <div>
                                 <span class="text-[11px] font-semibold text-slate-600 uppercase tracking-wider block">${t('pur.outstanding', 'Supplier Payables')}</span>
-                                <div class="text-lg font-bold font-mono ${supplierDue > 0 ? 'text-amber-800' : 'text-slate-900'} mt-0.5">${formatMoney(supplierDue)}</div>
+                                <div class="text-lg font-black font-mono ${supplierDue > 0 ? 'text-amber-800' : 'text-slate-900'} mt-0.5">${formatMoney(supplierDue)}</div>
                                 <span class="text-[11px] text-slate-500 mt-0.5 block">${t('nav.suppliers', 'Pending vendor settlement')}</span>
                             </div>
                         </div>
-                        <button class="btn btn-sm btn-secondary text-slate-700" onclick="navigate('suppliers')">${t('dash.btn_view_suppliers', 'View Payables')}</button>
+                        <button class="btn btn-sm btn-secondary text-amber-900 border-amber-200 bg-white hover:bg-amber-50" onclick="navigate('suppliers')">${t('dash.btn_view_suppliers', 'View Payables')}</button>
                     </div>
 
-                    <div class="card p-4 flex items-center justify-between">
+                    <div class="card p-4 flex items-center justify-between border-l-4 border-l-sky-500 bg-gradient-to-r from-sky-50/20 to-white shadow-sm">
                         <div class="flex items-start gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-700 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <div class="w-10 h-10 rounded-xl bg-sky-100 text-sky-800 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-xs">
                                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                             </div>
                             <div>
                                 <span class="text-[11px] font-semibold text-slate-600 uppercase tracking-wider block">${t('inv.total_skus', 'Cataloged Inventory')}</span>
-                                <div class="text-lg font-bold font-mono text-slate-900 mt-0.5">${formatNumber(activeProducts)} <span class="text-xs font-normal text-slate-500 font-sans">(${t('status.active', 'Active')})</span></div>
+                                <div class="text-lg font-black font-mono text-sky-950 mt-0.5">${formatNumber(activeProducts)} <span class="text-xs font-normal text-slate-500 font-sans">(${t('status.active', 'Active')})</span></div>
                                 <span class="text-[11px] text-slate-500 mt-0.5 block">${t('prod.type_all', 'Medicines & general products')}</span>
                             </div>
                         </div>
-                        <button class="btn btn-sm btn-secondary text-slate-700" onclick="navigate('products')">${t('dash.btn_view_products', 'View Catalog')}</button>
+                        <button class="btn btn-sm btn-secondary text-sky-900 border-sky-200 bg-white hover:bg-sky-50" onclick="navigate('products')">${t('dash.btn_view_products', 'View Catalog')}</button>
                     </div>
 
                 </div>

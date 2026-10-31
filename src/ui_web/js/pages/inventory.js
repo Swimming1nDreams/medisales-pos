@@ -7,7 +7,7 @@ async function renderInventory(container) {
     const headerActions = document.getElementById('header-actions');
     if (headerActions) {
         headerActions.innerHTML = `
-            <button class="btn btn-secondary text-xs" onclick="${inventoryTab === 'stock' ? 'exportInventoryValuationExcel()' : 'exportMedicineBatchesExcel()'}">
+            <button class="btn btn-secondary text-xs border-emerald-300 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 font-semibold" onclick="${inventoryTab === 'stock' ? 'exportInventoryValuationExcel()' : 'exportMedicineBatchesExcel()'}">
                 <svg class="w-3.5 h-3.5 text-emerald-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 <span>${t('btn.export_excel', 'Export to Excel')}</span>
             </button>
@@ -154,25 +154,25 @@ function _renderStockTbody() {
             <tr class="tr-hover">
                 <td class="td">
                     <div class="font-bold text-slate-900 text-xs leading-snug break-words" title="${escapeHtml(s.name)}">${highlightedName}</div>
-                    <div class="flex items-center gap-1 text-[10px] text-slate-500 mt-0.5">
-                        <span>${highlightedCat}</span>
+                    <div class="flex items-center gap-1.5 text-[10px] text-slate-500 mt-0.5">
+                        <span class="badge badge-purple text-[9px] py-0">${highlightedCat}</span>
                         <span class="text-slate-300">•</span>
-                        <span>${t('col.unit', 'Unit')}: ${escapeHtml(s.unit_measure || 'piece')}</span>
+                        <span>${t('col.unit', 'Unit')}: <strong class="text-slate-700">${escapeHtml(s.unit_measure || 'piece')}</strong></span>
                     </div>
                 </td>
                 <td class="td-num">
-                    <span class="text-xs font-bold ${isOut ? 'text-rose-700 font-black' : (isLow ? 'text-amber-800' : 'text-slate-900')}">
+                    <span class="badge ${isOut ? 'badge-danger font-black' : (isLow ? 'badge-warning font-bold' : 'badge-success font-bold')} text-xs font-mono">
                         ${s.current_stock}
                     </span>
                 </td>
-                <td class="td-num text-xs text-slate-500 font-mono">${s.min_stock_level || 0}</td>
+                <td class="td-num text-xs text-slate-500 font-mono font-bold">${s.min_stock_level || 0}</td>
                 <td class="td text-center">
-                    ${isOut ? `<span class="badge badge-danger text-[10px]">${t('status.out_of_stock', 'Out of Stock')}</span>` : 
-                      (isLow ? `<span class="badge badge-warning text-[10px]">${t('status.low_stock', 'Low Stock')}</span>` : 
-                      `<span class="badge badge-success text-[10px]">${t('status.active', 'In Stock')}</span>`)}
+                    ${isOut ? `<span class="badge badge-danger text-[10px] font-bold">${t('status.out_of_stock', 'Out of Stock')}</span>` : 
+                      (isLow ? `<span class="badge badge-warning text-[10px] font-bold">${t('status.low_stock', 'Low Stock')}</span>` : 
+                      `<span class="badge badge-success text-[10px] font-bold">${t('status.active', 'In Stock')}</span>`)}
                 </td>
                 <td class="td text-right whitespace-nowrap">
-                    <button class="btn btn-sm btn-secondary py-0.5 text-xs" onclick="navigate('purchases')">
+                    <button class="btn btn-sm btn-secondary text-teal-800 border-teal-200 bg-teal-50/50 hover:bg-teal-100/80 py-0.5 text-xs font-semibold" onclick="navigate('purchases')">
                         ${t('pur.add_button', 'Receive Stock')}
                     </button>
                 </td>
@@ -185,20 +185,20 @@ function _renderStockTbody() {
 function _renderInventoryTabs() {
     return `
         <div class="flex items-center gap-1.5 p-1 bg-slate-200/80 rounded-xl border border-slate-200 overflow-x-auto text-xs flex-shrink-0">
-            <button class="px-3.5 py-1.5 font-semibold rounded-lg transition-all flex items-center gap-1.5 ${inventoryTab === 'stock' ? 'bg-white text-teal-900 shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'}" onclick="switchInventoryTab('stock')">
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+            <button class="px-3.5 py-1.5 font-semibold rounded-lg transition-all flex items-center gap-1.5 ${inventoryTab === 'stock' ? 'bg-teal-700 text-white shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'}" onclick="switchInventoryTab('stock')">
+                <svg class="w-3.5 h-3.5 ${inventoryTab === 'stock' ? 'text-white' : 'text-teal-700'}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                 <span>${t('inv.tab_stock', 'Stock on Hand')}</span>
             </button>
-            <button class="px-3.5 py-1.5 font-semibold rounded-lg transition-all flex items-center gap-1.5 ${inventoryTab === 'all_batches' ? 'bg-white text-teal-900 shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'}" onclick="switchInventoryTab('all_batches')">
-                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            <button class="px-3.5 py-1.5 font-semibold rounded-lg transition-all flex items-center gap-1.5 ${inventoryTab === 'all_batches' ? 'bg-indigo-700 text-white shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'}" onclick="switchInventoryTab('all_batches')">
+                <svg class="w-3.5 h-3.5 ${inventoryTab === 'all_batches' ? 'text-white' : 'text-indigo-700'}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                 <span>${t('inv.filter_all_batches', 'All Medicine Batches')}</span>
             </button>
-            <button class="px-3.5 py-1.5 font-semibold rounded-lg transition-all flex items-center gap-1.5 ${inventoryTab === 'expiring_soon' ? 'bg-amber-100 text-amber-900 shadow-sm font-bold border border-amber-200' : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'}" onclick="switchInventoryTab('expiring_soon')">
-                <svg class="w-3.5 h-3.5 text-amber-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+            <button class="px-3.5 py-1.5 font-semibold rounded-lg transition-all flex items-center gap-1.5 ${inventoryTab === 'expiring_soon' ? 'bg-amber-500 text-white shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'}" onclick="switchInventoryTab('expiring_soon')">
+                <svg class="w-3.5 h-3.5 ${inventoryTab === 'expiring_soon' ? 'text-white' : 'text-amber-700'}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
                 <span>${t('inv.filter_expiring_soon', 'Expiring within 90 Days')}</span>
             </button>
-            <button class="px-3.5 py-1.5 font-semibold rounded-lg transition-all flex items-center gap-1.5 ${inventoryTab === 'expired' ? 'bg-rose-100 text-rose-900 shadow-sm font-bold border border-rose-200' : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'}" onclick="switchInventoryTab('expired')">
-                <svg class="w-3.5 h-3.5 text-rose-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+            <button class="px-3.5 py-1.5 font-semibold rounded-lg transition-all flex items-center gap-1.5 ${inventoryTab === 'expired' ? 'bg-rose-600 text-white shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'}" onclick="switchInventoryTab('expired')">
+                <svg class="w-3.5 h-3.5 ${inventoryTab === 'expired' ? 'text-white' : 'text-rose-700'}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
                 <span>${t('inv.filter_expired', 'Expired Batches')}</span>
             </button>
         </div>

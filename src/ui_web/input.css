@@ -163,6 +163,18 @@
   .badge-teal {
     @apply bg-teal-50 text-teal-800 border-teal-200;
   }
+  .badge-purple {
+    @apply bg-purple-50 text-purple-800 border-purple-200;
+  }
+  .badge-indigo {
+    @apply bg-indigo-50 text-indigo-800 border-indigo-200;
+  }
+  .badge-blue {
+    @apply bg-blue-50 text-blue-800 border-blue-200;
+  }
+  .badge-orange {
+    @apply bg-orange-50 text-orange-800 border-orange-200;
+  }
 
   /* KPI Cards */
   .kpi-card {

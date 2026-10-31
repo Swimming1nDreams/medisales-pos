@@ -7,28 +7,28 @@ function getNavGroups() {
             title: t("nav.group.dispensing", "OPERATIONS & DISPENSING"),
             badge: t("badge.dispensing", "DISPENSING"),
             items: [
-                { id: 'dashboard', label: t('nav.dashboard', 'Dashboard'), badge: '', icon: `<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline>` },
-                { id: 'sales', label: t('nav.sales', 'Sales / POS'), badge: 'F1', icon: `<circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>` },
-                { id: 'products', label: t('nav.products', 'Products Catalog'), badge: '', icon: `<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line>` },
-                { id: 'inventory', label: t('nav.inventory', 'Inventory & FEFO'), badge: '', icon: `<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>` },
+                { id: 'dashboard', label: t('nav.dashboard', 'Dashboard'), badge: '', color: 'text-teal-400', icon: `<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline>` },
+                { id: 'sales', label: t('nav.sales', 'Sales / POS'), badge: 'F1', color: 'text-emerald-400', icon: `<circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>` },
+                { id: 'products', label: t('nav.products', 'Products Catalog'), badge: '', color: 'text-sky-400', icon: `<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line>` },
+                { id: 'inventory', label: t('nav.inventory', 'Inventory & FEFO'), badge: '', color: 'text-violet-400', icon: `<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>` },
             ]
         },
         {
             title: t("nav.group.procurement", "PROCUREMENT & CUSTOMERS"),
             badge: t("badge.procurement", "LEDGER"),
             items: [
-                { id: 'purchases', label: t('nav.purchases', 'Purchases & Receiving'), badge: '', icon: `<line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>` },
-                { id: 'suppliers', label: t('nav.suppliers', 'Suppliers Ledger'), badge: '', icon: `<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>` },
-                { id: 'customers', label: t('nav.customers', 'Customer Credit'), badge: '', icon: `<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>` },
-                { id: 'expenses', label: t('nav.expenses', 'Operating Expenses'), badge: '', icon: `<line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>` },
+                { id: 'purchases', label: t('nav.purchases', 'Purchases & Receiving'), badge: '', color: 'text-indigo-400', icon: `<line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>` },
+                { id: 'suppliers', label: t('nav.suppliers', 'Suppliers Ledger'), badge: '', color: 'text-amber-400', icon: `<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>` },
+                { id: 'customers', label: t('nav.customers', 'Customer Credit'), badge: '', color: 'text-rose-400', icon: `<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>` },
+                { id: 'expenses', label: t('nav.expenses', 'Operating Expenses'), badge: '', color: 'text-orange-400', icon: `<line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>` },
             ]
         },
         {
             title: t("nav.group.finance", "FINANCE & SYSTEM"),
             badge: t("badge.finance", "FINANCE"),
             items: [
-                { id: 'reports', label: t('nav.reports', 'Financial Reports'), badge: '', icon: `<line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line>` },
-                { id: 'settings', label: t('nav.settings', 'Settings & Database'), badge: '', icon: `<circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>` }
+                { id: 'reports', label: t('nav.reports', 'Financial Reports'), badge: '', color: 'text-cyan-400', icon: `<line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line>` },
+                { id: 'settings', label: t('nav.settings', 'Settings & Database'), badge: '', color: 'text-slate-400', icon: `<circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>` }
             ]
         }
     ];
@@ -96,10 +96,10 @@ function initNavigation() {
                 ${g.items.map(p => `
                     <button id="nav-${p.id}" class="w-full flex items-center justify-between px-3 py-2 text-xs font-medium rounded-lg transition-all text-slate-300 hover:text-white hover:bg-slate-800/70 group" onclick="navigate('${p.id}')">
                         <div class="flex items-center gap-2.5 min-w-0">
-                            <svg class="w-4 h-4 opacity-75 group-hover:opacity-100 flex-shrink-0 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p.icon}</svg>
+                            <svg class="w-4 h-4 ${p.color || 'text-slate-400'} flex-shrink-0 transition-transform group-hover:scale-110" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p.icon}</svg>
                             <span class="truncate">${p.label}</span>
                         </div>
-                        ${p.badge ? `<span class="text-[9px] font-mono font-bold bg-slate-800 text-teal-400 px-1.5 py-0.5 rounded-md border border-slate-700/80">${p.badge}</span>` : ''}
+                        ${p.badge ? `<span class="text-[9px] font-mono font-bold bg-teal-950 text-teal-300 px-1.5 py-0.5 rounded-md border border-teal-700/80">${p.badge}</span>` : ''}
                     </button>
                 `).join('')}
             </div>
@@ -115,10 +115,19 @@ function updateNavState() {
         const el = document.getElementById(`nav-${p.id}`);
         if (!el) return;
         if (p.id === currentPage) {
-            el.className = "w-full flex items-center justify-between px-3 py-2 text-xs font-semibold rounded-lg bg-teal-800 text-white shadow-xs border-l-2 border-teal-400 group";
+            el.className = "w-full flex items-center justify-between px-3 py-2 text-xs font-bold rounded-lg bg-gradient-to-r from-teal-800 to-slate-800 text-white shadow-sm border-l-4 border-emerald-400 group";
             
             const badgeEl = document.getElementById('page-badge');
-            if (badgeEl) badgeEl.textContent = p.groupBadge || t('badge.dispensing', 'DISPENSING');
+            if (badgeEl) {
+                badgeEl.textContent = p.groupBadge || t('badge.dispensing', 'DISPENSING');
+                if (p.id === 'dashboard' || p.id === 'sales' || p.id === 'products' || p.id === 'inventory') {
+                    badgeEl.className = "text-[10px] font-bold uppercase tracking-wider text-teal-800 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200/80 whitespace-nowrap flex-shrink-0";
+                } else if (p.id === 'purchases' || p.id === 'suppliers' || p.id === 'customers' || p.id === 'expenses') {
+                    badgeEl.className = "text-[10px] font-bold uppercase tracking-wider text-indigo-800 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200/80 whitespace-nowrap flex-shrink-0";
+                } else {
+                    badgeEl.className = "text-[10px] font-bold uppercase tracking-wider text-purple-800 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200/80 whitespace-nowrap flex-shrink-0";
+                }
+            }
 
             const titleEl = document.getElementById('page-title');
             if (titleEl) titleEl.textContent = p.label;

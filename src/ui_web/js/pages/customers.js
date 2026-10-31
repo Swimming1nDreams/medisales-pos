@@ -87,20 +87,20 @@ function _renderCustomersTbody() {
                     </div>
                 </td>
                 <td class="td-num">
-                    <span class="font-bold text-xs ${bal > 0 ? 'text-rose-700 font-mono font-black' : 'text-slate-700 font-mono'}">
+                    <span class="badge ${bal > 0 ? 'badge-danger font-black' : 'badge-success font-bold'} text-xs font-mono">
                         ${formatMoney(bal)}
                     </span>
-                    <span class="text-[10px] text-slate-400 block font-mono">Repaid: ${formatMoney(balInfo.total_repaid)}</span>
+                    <span class="text-[10px] text-slate-400 block font-mono mt-0.5">Repaid: ${formatMoney(balInfo.total_repaid)}</span>
                 </td>
                 <td class="td text-center">
                     ${bal > 0 ? 
-                        `<span class="badge badge-warning text-[10px]">Due: ${formatMoney(bal)}</span>` : 
-                        `<span class="badge badge-success text-[10px]">${t('status.completed', 'Clear')}</span>`}
+                        `<span class="badge badge-warning text-[10px] font-bold">⚠️ ${t('cust.accounts_due', 'Debt Due')}</span>` : 
+                        `<span class="badge badge-success text-[10px] font-bold">✓ ${t('status.completed', 'Clear')}</span>`}
                 </td>
                 <td class="td text-right">
                     <div class="flex items-center justify-end gap-1">
                         ${bal > 0 ? `
-                            <button class="btn btn-sm btn-primary py-0.5 px-2 text-xs" onclick="openCustomerPaymentModal(${c.id}, '${escapeHtml(c.name)}', ${bal})">
+                            <button class="btn btn-sm btn-success py-0.5 px-2.5 text-xs font-bold shadow-xs" onclick="openCustomerPaymentModal(${c.id}, '${escapeHtml(c.name)}', ${bal})">
                                 ${t('cust.btn_repay', 'Repay')}
                             </button>
                         ` : ''}
@@ -123,7 +123,7 @@ async function renderCustomers(container) {
     if (headerActions) {
         headerActions.innerHTML = `
             <div class="flex items-center gap-2">
-                <button class="btn btn-primary text-xs" onclick="openCustomerModal()">
+                <button class="btn btn-primary text-xs bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-bold border-amber-600 shadow-sm" onclick="openCustomerModal()">
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     <span>${t('cust.add_button', 'Register New Customer')}</span>
                 </button>
