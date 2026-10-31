@@ -102,7 +102,7 @@ async function renderDashboard(container) {
                     </div>
 
                     <!-- Net Operating Profit -->
-                    <div class="kpi-card ${netProfit < 0 ? 'bg-rose-50/50 border-rose-300' : 'bg-emerald-50/50 border-emerald-300'}">
+                    <div class="kpi-card ${netProfit < 0 ? 'bg-rose-50/70 border-rose-300/80' : 'bg-emerald-50/70 border-emerald-300/80'}">
                         <div class="flex items-center justify-between">
                             <span class="kpi-title ${netProfit < 0 ? 'text-rose-900 font-bold' : 'text-emerald-900 font-bold'}">${t('rep.kpi_net_profit', 'Net Operating Profit')}</span>
                             <span class="badge ${netProfit >= 0 ? 'badge-success' : 'badge-danger'} text-[10px] font-bold">${netProfit >= 0 ? t('set.recon_surplus', 'Surplus') : t('set.recon_shortage', 'Deficit')}</span>

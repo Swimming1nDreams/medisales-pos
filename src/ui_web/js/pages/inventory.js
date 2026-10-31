@@ -12,7 +12,7 @@ async function renderInventory(container) {
                     <svg class="w-3.5 h-3.5 text-emerald-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     <span>${t('btn.export_excel', 'Export to Excel')}</span>
                 </button>
-                <div class="inline-flex rounded-md border border-slate-300 bg-slate-100 p-0.5">
+                <div class="inline-flex rounded-lg border border-slate-200 bg-slate-100 p-0.5">
                     <button class="px-3 py-1 text-xs font-semibold rounded whitespace-nowrap transition-colors ${inventoryTab === 'stock' ? 'bg-white text-teal-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'}" onclick="switchInventoryTab('stock')">
                         ${t('inv.tab_stock', 'Stock on Hand')}
                     </button>

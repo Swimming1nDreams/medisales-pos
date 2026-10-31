@@ -94,12 +94,12 @@ function initNavigation() {
             <div class="px-2.5 text-[9px] font-bold uppercase tracking-wider text-slate-500 select-none">${g.title}</div>
             <div class="space-y-0.5">
                 ${g.items.map(p => `
-                    <button id="nav-${p.id}" class="w-full flex items-center justify-between px-3 py-2 text-xs font-medium rounded transition-colors text-slate-300 hover:text-white hover:bg-slate-800/80 group" onclick="navigate('${p.id}')">
+                    <button id="nav-${p.id}" class="w-full flex items-center justify-between px-3 py-2 text-xs font-medium rounded-lg transition-all text-slate-300 hover:text-white hover:bg-slate-800/70 group" onclick="navigate('${p.id}')">
                         <div class="flex items-center gap-2.5 min-w-0">
-                            <svg class="w-4 h-4 opacity-75 group-hover:opacity-100 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p.icon}</svg>
+                            <svg class="w-4 h-4 opacity-75 group-hover:opacity-100 flex-shrink-0 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p.icon}</svg>
                             <span class="truncate">${p.label}</span>
                         </div>
-                        ${p.badge ? `<span class="text-[9px] font-mono font-bold bg-slate-800 text-teal-400 px-1.5 py-0.5 rounded border border-slate-700/80">${p.badge}</span>` : ''}
+                        ${p.badge ? `<span class="text-[9px] font-mono font-bold bg-slate-800 text-teal-400 px-1.5 py-0.5 rounded-md border border-slate-700/80">${p.badge}</span>` : ''}
                     </button>
                 `).join('')}
             </div>
@@ -115,7 +115,7 @@ function updateNavState() {
         const el = document.getElementById(`nav-${p.id}`);
         if (!el) return;
         if (p.id === currentPage) {
-            el.className = "w-full flex items-center justify-between px-3 py-2 text-xs font-semibold rounded bg-teal-800 text-white shadow-xs border-l-2 border-teal-400 group";
+            el.className = "w-full flex items-center justify-between px-3 py-2 text-xs font-semibold rounded-lg bg-teal-800 text-white shadow-xs border-l-2 border-teal-400 group";
             
             const badgeEl = document.getElementById('page-badge');
             if (badgeEl) badgeEl.textContent = p.groupBadge || t('badge.dispensing', 'DISPENSING');
@@ -126,7 +126,7 @@ function updateNavState() {
             const sub = document.getElementById('page-subtitle');
             if (sub) sub.textContent = t('subtitle.' + p.id, '');
         } else {
-            el.className = "w-full flex items-center justify-between px-3 py-2 text-xs font-medium rounded transition-colors text-slate-300 hover:text-white hover:bg-slate-800/80 group";
+            el.className = "w-full flex items-center justify-between px-3 py-2 text-xs font-medium rounded-lg transition-all text-slate-300 hover:text-white hover:bg-slate-800/70 group";
         }
     });
 
@@ -136,11 +136,11 @@ function updateNavState() {
     const btnMy = document.getElementById('lang-btn-my');
     if (btnEn && btnMy) {
         if (curLang === 'my') {
-            btnMy.className = "px-2 py-0.5 rounded bg-teal-700 text-white font-bold shadow-xs";
-            btnEn.className = "px-2 py-0.5 rounded text-slate-600 hover:text-slate-900";
+            btnMy.className = "px-2.5 py-0.5 rounded-md bg-teal-700 text-white font-bold shadow-xs";
+            btnEn.className = "px-2.5 py-0.5 rounded-md text-slate-600 hover:text-slate-900 font-medium";
         } else {
-            btnEn.className = "px-2 py-0.5 rounded bg-teal-700 text-white font-bold shadow-xs";
-            btnMy.className = "px-2 py-0.5 rounded text-slate-600 hover:text-slate-900";
+            btnEn.className = "px-2.5 py-0.5 rounded-md bg-teal-700 text-white font-bold shadow-xs";
+            btnMy.className = "px-2.5 py-0.5 rounded-md text-slate-600 hover:text-slate-900 font-medium";
         }
     }
 }
@@ -180,7 +180,7 @@ function showToast(message, type = 'success') {
         iconSvg = '<svg class="w-4 h-4 text-amber-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>';
     }
 
-    toast.className = `${bgStyle} px-3.5 py-2.5 rounded-md shadow-lg border flex items-center gap-2.5 transform transition-all duration-150 translate-y-0 opacity-100 pointer-events-auto max-w-sm text-xs font-medium`;
+    toast.className = `${bgStyle} px-4 py-3 rounded-xl shadow-xl border flex items-center gap-3 transform transition-all duration-150 translate-y-0 opacity-100 pointer-events-auto max-w-sm text-xs font-semibold`;
     toast.innerHTML = `
         ${iconSvg}
         <div class="flex-1 leading-snug">${message}</div>
@@ -386,25 +386,25 @@ function openModal(title, htmlContent, onSave, options = {}) {
     const content = document.getElementById('modal-content');
     const maxWidthClass = options.maxWidth || 'max-w-xl';
     
-    content.className = `bg-white rounded-lg shadow-xl ${maxWidthClass} w-full transform scale-95 opacity-0 transition-all duration-150 max-h-[92vh] flex flex-col overflow-hidden border border-slate-200`;
+    content.className = `bg-white rounded-2xl shadow-2xl ${maxWidthClass} w-full transform scale-95 opacity-0 transition-all duration-150 max-h-[92vh] flex flex-col overflow-hidden border border-slate-200/80`;
 
     const cancelLabel = options.cancelText || t('btn.cancel', 'Cancel');
     const saveLabel = options.saveText || t('btn.save', 'Save');
 
     content.innerHTML = `
-        <div class="px-5 py-3.5 border-b border-slate-200 flex justify-between items-center bg-slate-50/80 flex-shrink-0">
+        <div class="px-5 py-3.5 border-b border-slate-100 flex justify-between items-center bg-slate-50/70 flex-shrink-0">
             <div>
                 <h3 class="text-sm font-bold text-slate-900 leading-tight">${title}</h3>
                 ${options.subtitle ? `<p class="text-[11px] text-slate-500 mt-0.5">${options.subtitle}</p>` : ''}
             </div>
-            <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 rounded p-1 hover:bg-slate-200/60 transition-colors" title="Close (Esc)">
+            <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 rounded-lg p-1 hover:bg-slate-200/60 transition-colors" title="Close (Esc)">
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
         <div class="px-5 py-4 overflow-y-auto flex-1 bg-white space-y-4">
             ${htmlContent}
         </div>
-        <div class="px-5 py-3 border-t border-slate-200 flex justify-end gap-2 bg-slate-50/80 flex-shrink-0">
+        <div class="px-5 py-3 border-t border-slate-100 flex justify-end gap-2 bg-slate-50/70 flex-shrink-0">
             <button onclick="closeModal()" class="btn btn-secondary">${cancelLabel}</button>
             <button id="modal-save-btn" class="${options.saveBtnClass || 'btn-primary'}">${saveLabel}</button>
         </div>

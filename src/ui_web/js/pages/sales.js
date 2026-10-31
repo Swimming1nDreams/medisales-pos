@@ -87,9 +87,9 @@ function _renderPosView(container) {
                             <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
                                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                             </span>
-                            <input type="text" id="sales-search" class="form-input pl-8 text-xs" placeholder="${t('sales.search_placeholder', 'Search medicine name, barcode, or general product...')}" oninput="salesSearch(this.value)" onkeydown="if(event.key==='Enter') salesSearchEnter()" autofocus>
+                            <input type="text" id="sales-search" class="form-input pl-8 text-xs py-2" placeholder="${t('sales.search_placeholder', 'Search medicine name, barcode, or general product...')}" oninput="salesSearch(this.value)" onkeydown="if(event.key==='Enter') salesSearchEnter()" autofocus>
                         </div>
-                        <select id="sales-cat-filter" class="form-select w-44 text-xs font-medium" onchange="salesFilterCategory(this.value)">
+                        <select id="sales-cat-filter" class="form-select w-44 text-xs font-semibold py-2" onchange="salesFilterCategory(this.value)">
                             <option value="all">${t('sales.all_categories', 'All Categories')}</option>
                             <option value="medicine">${t('prod.type_medicine', 'Medicines Only')}</option>
                             <option value="general">${t('prod.type_general', 'General Merchandise')}</option>
@@ -99,15 +99,15 @@ function _renderPosView(container) {
 
                     <!-- Filter pills -->
                     <div class="flex items-center gap-1.5 overflow-x-auto text-[11px] pb-0.5">
-                        <button type="button" class="px-2 py-0.5 rounded border ${salesCategoryFilter === 'all' ? 'bg-teal-700 text-white border-teal-700 font-semibold' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}" onclick="salesFilterCategory('all')">${t('prod.type_all', 'All Products')}</button>
-                        <button type="button" class="px-2 py-0.5 rounded border ${salesCategoryFilter === 'medicine' ? 'bg-teal-700 text-white border-teal-700 font-semibold' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}" onclick="salesFilterCategory('medicine')">${t('prod.type_medicine', 'Medicines (FEFO)')}</button>
-                        <button type="button" class="px-2 py-0.5 rounded border ${salesCategoryFilter === 'general' ? 'bg-teal-700 text-white border-teal-700 font-semibold' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}" onclick="salesFilterCategory('general')">${t('prod.type_general', 'General Goods')}</button>
+                        <button type="button" class="px-2.5 py-0.5 rounded-full border transition-colors ${salesCategoryFilter === 'all' ? 'bg-teal-700 text-white border-teal-700 font-semibold' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}" onclick="salesFilterCategory('all')">${t('prod.type_all', 'All Products')}</button>
+                        <button type="button" class="px-2.5 py-0.5 rounded-full border transition-colors ${salesCategoryFilter === 'medicine' ? 'bg-teal-700 text-white border-teal-700 font-semibold' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}" onclick="salesFilterCategory('medicine')">${t('prod.type_medicine', 'Medicines (FEFO)')}</button>
+                        <button type="button" class="px-2.5 py-0.5 rounded-full border transition-colors ${salesCategoryFilter === 'general' ? 'bg-teal-700 text-white border-teal-700 font-semibold' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}" onclick="salesFilterCategory('general')">${t('prod.type_general', 'General Goods')}</button>
                     </div>
                 </div>
 
                 <!-- Products Grid -->
                 <div class="flex-1 overflow-auto p-2.5 bg-slate-50/50">
-                    <div id="sales-product-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 gap-2">
+                    <div id="sales-product-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 gap-2.5">
                         <!-- Products rendered here -->
                     </div>
                 </div>
@@ -149,7 +149,7 @@ function _renderPosView(container) {
                     </div>
 
                     <!-- Quick Round-off & Discount Section -->
-                    <div class="p-2 rounded bg-amber-50/60 border border-amber-200/80 space-y-1.5">
+                    <div class="p-2.5 rounded-xl bg-amber-50/70 border border-amber-200/90 space-y-1.5 shadow-xs">
                         <div class="flex justify-between items-center">
                             <span class="font-semibold text-amber-900 text-[11px] flex items-center gap-1">
                                 <svg class="w-3 h-3 text-amber-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
@@ -162,25 +162,28 @@ function _renderPosView(container) {
                         </div>
                         <div class="flex items-center gap-1 text-[10px]">
                             <span class="text-amber-800 font-medium">Quick:</span>
-                            <button type="button" class="px-1.5 py-0.5 bg-white border border-amber-300 rounded hover:bg-amber-100 text-amber-900 font-mono font-medium" onclick="salesSetCustomDiscount(0)">0 Ks</button>
-                            <button type="button" class="px-1.5 py-0.5 bg-white border border-amber-300 rounded hover:bg-amber-100 text-amber-900 font-mono font-medium" onclick="salesRoundDiscount(500)" title="Round down to nearest 500 Ks">Round 500</button>
-                            <button type="button" class="px-1.5 py-0.5 bg-white border border-amber-300 rounded hover:bg-amber-100 text-amber-900 font-mono font-medium" onclick="salesRoundDiscount(1000)" title="Round down to nearest 1,000 Ks">Round 1,000</button>
+                            <button type="button" class="px-2 py-0.5 bg-white border border-amber-300 rounded-md hover:bg-amber-100 text-amber-900 font-mono font-bold transition-colors" onclick="salesSetCustomDiscount(0)">0 Ks</button>
+                            <button type="button" class="px-2 py-0.5 bg-white border border-amber-300 rounded-md hover:bg-amber-100 text-amber-900 font-mono font-bold transition-colors" onclick="salesRoundDiscount(500)" title="Round down to nearest 500 Ks">Round 500</button>
+                            <button type="button" class="px-2 py-0.5 bg-white border border-amber-300 rounded-md hover:bg-amber-100 text-amber-900 font-mono font-bold transition-colors" onclick="salesRoundDiscount(1000)" title="Round down to nearest 1,000 Ks">Round 1,000</button>
                         </div>
                     </div>
 
                     <!-- Grand Net Total Due Banner -->
-                    <div class="p-2 bg-white rounded-md border border-slate-200 flex justify-between items-baseline shadow-xs">
-                        <span class="text-xs font-bold uppercase tracking-wider text-slate-700">${t('sales.total_due', 'Net Total Due')}</span>
+                    <div class="p-3 bg-gradient-to-r from-teal-50/90 to-emerald-50/90 rounded-xl border border-teal-200/90 flex justify-between items-center shadow-xs">
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-teal-900 block">${t('sales.total_due', 'Net Total Due')}</span>
+                            <span class="text-[10px] text-teal-700/80 font-medium">Payable Amount</span>
+                        </div>
                         <div id="sales-cart-total" data-subtotal="0" data-val="0" class="text-2xl font-black font-mono text-teal-900 tabular-nums whitespace-nowrap">0 Ks</div>
                     </div>
 
                     <!-- Payment Mode Switcher (Cash vs Credit) -->
-                    <div class="grid grid-cols-2 gap-1 p-0.5 bg-slate-200/80 rounded-md">
-                        <button type="button" class="py-1 px-2 text-xs font-bold rounded transition-colors flex items-center justify-center gap-1.5 ${salesPaymentType === 'cash' ? 'bg-white text-teal-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'}" onclick="salesSetPaymentType('cash')">
+                    <div class="grid grid-cols-2 gap-1.5 p-1 bg-slate-200/70 rounded-xl">
+                        <button type="button" class="py-1.5 px-2 text-xs font-bold rounded-lg transition-all duration-150 flex items-center justify-center gap-1.5 ${salesPaymentType === 'cash' ? 'bg-white text-teal-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'}" onclick="salesSetPaymentType('cash')">
                             <span>💵</span>
                             <span>${t('sales.cash_mode', 'Cash Sale')}</span>
                         </button>
-                        <button type="button" class="py-1 px-2 text-xs font-bold rounded transition-colors flex items-center justify-center gap-1.5 ${salesPaymentType === 'credit' ? 'bg-amber-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}" onclick="salesSetPaymentType('credit')">
+                        <button type="button" class="py-1.5 px-2 text-xs font-bold rounded-lg transition-all duration-150 flex items-center justify-center gap-1.5 ${salesPaymentType === 'credit' ? 'bg-amber-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'}" onclick="salesSetPaymentType('credit')">
                             <span>📒</span>
                             <span>${t('sales.credit_mode', 'Credit Sale')}</span>
                         </button>
@@ -198,14 +201,14 @@ function _renderPosView(container) {
                         <div class="flex items-center justify-between text-[10px] text-slate-500">
                             <span class="font-medium">Quick Notes (+):</span>
                             <div class="flex gap-1">
-                                <button type="button" class="px-2 py-0.5 text-[10px] font-mono bg-white border border-slate-300 rounded hover:bg-slate-100 text-slate-700 font-semibold" onclick="salesAddCash(1000)">+1,000</button>
-                                <button type="button" class="px-2 py-0.5 text-[10px] font-mono bg-white border border-slate-300 rounded hover:bg-slate-100 text-slate-700 font-semibold" onclick="salesAddCash(5000)">+5,000</button>
-                                <button type="button" class="px-2 py-0.5 text-[10px] font-mono bg-white border border-slate-300 rounded hover:bg-slate-100 text-slate-700 font-semibold" onclick="salesAddCash(10000)">+10,000</button>
+                                <button type="button" class="px-2 py-0.5 text-[10px] font-mono bg-white border border-slate-300 rounded-md hover:bg-slate-100 text-slate-700 font-bold active:scale-95 transition-all" onclick="salesAddCash(1000)">+1,000</button>
+                                <button type="button" class="px-2 py-0.5 text-[10px] font-mono bg-white border border-slate-300 rounded-md hover:bg-slate-100 text-slate-700 font-bold active:scale-95 transition-all" onclick="salesAddCash(5000)">+5,000</button>
+                                <button type="button" class="px-2 py-0.5 text-[10px] font-mono bg-white border border-slate-300 rounded-md hover:bg-slate-100 text-slate-700 font-bold active:scale-95 transition-all" onclick="salesAddCash(10000)">+10,000</button>
                             </div>
                         </div>
 
                         <!-- Change Banner -->
-                        <div id="sales-change-banner" class="flex justify-between items-center px-3 py-1.5 rounded border border-slate-200 bg-white text-xs">
+                        <div id="sales-change-banner" class="flex justify-between items-center px-3 py-2 rounded-lg border border-slate-200/90 bg-white text-xs shadow-xs">
                             <span class="font-semibold text-slate-600">${t('sales.change_due', 'Change Due:')}</span>
                             <span id="sales-change" class="font-mono font-bold text-teal-800 tabular-nums whitespace-nowrap">0 Ks</span>
                         </div>
@@ -251,7 +254,7 @@ function _renderPosView(container) {
                     </div>
 
                     <!-- Complete Sale Button -->
-                    <button id="sales-checkout-btn" class="btn ${salesPaymentType === 'credit' ? 'btn-warning bg-amber-600 hover:bg-amber-700 text-white' : 'btn-primary'} w-full py-2 text-xs font-bold shadow-xs flex items-center justify-center gap-1.5" onclick="salesCheckout()">
+                    <button id="sales-checkout-btn" class="btn ${salesPaymentType === 'credit' ? 'btn-warning bg-amber-600 hover:bg-amber-700 text-white' : 'btn-primary'} w-full py-2.5 text-xs font-bold shadow-xs flex items-center justify-center gap-1.5" onclick="salesCheckout()">
                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
                         <span id="sales-checkout-btn-label">${salesPaymentType === 'credit' ? t('sales.record_credit_sale', 'Record to Credit Book (Enter)') : t('sales.complete_sale', 'Complete Sale & Print (F2)')}</span>
                     </button>
@@ -313,10 +316,10 @@ function _renderSalesProducts(query) {
             : escapeHtml(categoryLabel);
 
         return `
-            <div class="bg-white border border-slate-200 rounded-md p-2 shadow-xs hover:border-teal-700 hover:shadow-sm cursor-pointer transition-all flex flex-col justify-between min-h-[105px] group" onclick="salesAddToCart(${p.id})">
+            <div class="bg-white border border-slate-200/90 rounded-xl p-3 shadow-xs hover:border-teal-600 hover:shadow-md cursor-pointer transition-all duration-150 flex flex-col justify-between min-h-[110px] group" onclick="salesAddToCart(${p.id})">
                 <div>
                     <div class="flex items-center justify-between gap-1 mb-1">
-                        <span class="text-[10px] font-semibold tracking-wider uppercase px-1.5 py-0.2 rounded ${isMed ? 'bg-teal-50 text-teal-800 border border-teal-200' : 'bg-slate-100 text-slate-700 border border-slate-200'}">
+                        <span class="text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full ${isMed ? 'bg-teal-50 text-teal-800 border border-teal-200' : 'bg-slate-100 text-slate-700 border border-slate-200'}">
                             ${isMed ? t('prod.type_medicine', 'Medicine (FEFO)') : t('prod.type_general', 'General')}
                         </span>
                         <span class="text-[11px] font-mono font-medium ${isLow ? 'text-amber-800 font-bold' : 'text-slate-600'}">
@@ -334,17 +337,17 @@ function _renderSalesProducts(query) {
                         <span class="text-xs font-bold font-mono text-teal-800 tabular-nums whitespace-nowrap">
                             ${formatMoney(p.selling_price)} / ${escapeHtml(p.unit_measure || 'unit')}
                         </span>
-                        <span class="btn btn-sm btn-subtle text-teal-800 group-hover:bg-teal-800 group-hover:text-white transition-colors py-0.5 px-2 text-[11px]">
+                        <span class="btn btn-sm btn-subtle text-teal-800 group-hover:bg-teal-700 group-hover:text-white transition-colors py-0.5 px-2.5 text-[11px] rounded-md font-bold">
                             + ${t('btn.add', 'Add')}
                         </span>
                     </div>
                     ${(p.packagings && p.packagings.length > 0) ? `
                         <div class="flex flex-wrap gap-1 mt-1.5 pt-1 border-t border-dashed border-slate-200" onclick="event.stopPropagation()">
-                            <button type="button" class="text-[10px] px-1.5 py-0.5 rounded border border-slate-300 bg-white hover:bg-slate-100 font-semibold text-slate-700" onclick="salesAddToCart(${p.id}, null)">
+                            <button type="button" class="text-[10px] px-1.5 py-0.5 rounded-md border border-slate-300 bg-white hover:bg-slate-100 font-semibold text-slate-700 transition-colors" onclick="salesAddToCart(${p.id}, null)">
                                 ${escapeHtml(p.unit_measure)}
                             </button>
                             ${p.packagings.map(pkg => `
-                                <button type="button" class="text-[10px] px-1.5 py-0.5 rounded border border-teal-300 bg-teal-50 hover:bg-teal-100 font-bold text-teal-800" onclick="salesAddToCart(${p.id}, ${pkg.id})" title="${pkg.conversion_factor} ${escapeHtml(p.unit_measure)}">
+                                <button type="button" class="text-[10px] px-1.5 py-0.5 rounded-md border border-teal-300 bg-teal-50 hover:bg-teal-100 font-bold text-teal-800 transition-colors" onclick="salesAddToCart(${p.id}, ${pkg.id})" title="${pkg.conversion_factor} ${escapeHtml(p.unit_measure)}">
                                     ${escapeHtml(pkg.unit_name)}: ${formatMoney(pkg.selling_price)}
                                 </button>
                             `).join('')}
@@ -507,7 +510,7 @@ function _renderSalesCart() {
                     
                     <!-- Qty Stepper -->
                     <div class="flex items-center gap-1.5 flex-shrink-0">
-                        <div class="flex items-center border border-slate-300 rounded bg-white overflow-hidden shadow-xs">
+                        <div class="flex items-center border border-slate-300 rounded-md bg-white overflow-hidden shadow-xs">
                             <button type="button" class="w-5 h-5 flex items-center justify-center text-slate-600 hover:bg-slate-100 font-bold text-xs" onclick="salesUpdateQty(${i}, -1)">−</button>
                             <input type="number" class="w-9 h-5 text-center text-xs font-mono font-bold border-x border-slate-200 focus:outline-none" value="${c.qty}" min="1" max="${c.product.current_stock}" onchange="salesSetQty(${i}, this.value)">
                             <button type="button" class="w-5 h-5 flex items-center justify-center text-slate-600 hover:bg-slate-100 font-bold text-xs" onclick="salesUpdateQty(${i}, 1)">+</button>

@@ -136,11 +136,11 @@ function _renderProductsTbody() {
                     </div>
                     ${packagings.length > 0 ? `
                         <div class="flex flex-wrap items-center gap-1 mt-1 text-[10px]">
-                            <span class="px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                            <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200 font-medium">
                                 1 ${escapeHtml(p.unit_measure)}: ${formatMoney(p.selling_price)}
                             </span>
                             ${packagings.map(pkg => `
-                                <span class="px-1.5 py-0.2 rounded bg-teal-50 text-teal-800 border border-teal-200 font-semibold" title="1 ${escapeHtml(pkg.unit_name)} = ${pkg.conversion_factor} ${escapeHtml(p.unit_measure)}">
+                                <span class="px-2 py-0.5 rounded-md bg-teal-50 text-teal-800 border border-teal-200 font-bold" title="1 ${escapeHtml(pkg.unit_name)} = ${pkg.conversion_factor} ${escapeHtml(p.unit_measure)}">
                                     1 ${escapeHtml(pkg.unit_name)} [${pkg.conversion_factor}]: ${formatMoney(pkg.selling_price)}
                                 </span>
                             `).join('')}
