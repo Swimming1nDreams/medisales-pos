@@ -187,7 +187,7 @@ async function renderSettings(container) {
                                 </div>
                                 <div>
                                     <span class="text-slate-500">${t('set.safety', 'Safety Guarantee:')}</span>
-                                    <div class="text-slate-900 font-medium">ACID Atomic Commits</div>
+                                    <div class="text-slate-900 font-medium">${t('set.acid_note', 'ACID Atomic Commits')}</div>
                                 </div>
                             </div>
                         </div>
@@ -379,7 +379,7 @@ async function renderSettings(container) {
                             </div>
                             <div class="p-2 bg-slate-50 rounded border border-slate-200 col-span-2">
                                 <span class="text-slate-500 block text-[10px]">${t('set.audit_integrity', 'Audit Integrity')}</span>
-                                <span class="font-medium text-slate-800">Permanent record retention with explicit void logs</span>
+                                <span class="font-medium text-slate-800">${t('set.retention_note', 'Permanent record retention with explicit void logs')}</span>
                             </div>
                         </div>
                     </div>

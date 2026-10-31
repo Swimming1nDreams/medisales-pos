@@ -90,11 +90,38 @@ function _renderStockTbody() {
     if (tfootQtyEl) tfootQtyEl.textContent = totalQty.toLocaleString('en-US');
 
     if (filtered.length === 0) {
+        if (inventoryData.length === 0 && !inventorySearch && !inventoryLowStockOnly) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="py-14 px-6 text-center">
+                        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-teal-50 text-teal-700 mb-3 border border-teal-100 shadow-sm">
+                            <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                        </div>
+                        <div class="text-sm font-bold text-slate-800">${t('inv.empty_welcome_title', 'Inventory Tracking Ready')}</div>
+                        <p class="text-xs text-slate-500 max-w-md mx-auto mt-1.5 mb-5 leading-relaxed">
+                            ${t('inv.empty_welcome_desc', 'Once you catalog products or record purchases from suppliers, stock levels, batch expiries and valuations will be tracked here in real time.')}
+                        </p>
+                        <div class="flex items-center justify-center gap-2.5">
+                            <button class="btn btn-primary inline-flex items-center gap-1.5" onclick="navigate('products')">
+                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                <span>${t('prod.add_button', 'Add New Product')}</span>
+                            </button>
+                            <button class="btn btn-secondary inline-flex items-center gap-1.5" onclick="navigate('purchases')">
+                                <svg class="w-3.5 h-3.5 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                                <span>${t('pur.add_button', 'Receive Purchase')}</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
         tbody.innerHTML = `
             <tr>
-                <td colspan="5" class="py-16 text-center">
+                <td colspan="5" class="py-14 text-center">
                     <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-slate-100 text-slate-400 mb-3">
-                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                     </div>
                     <div class="text-sm font-semibold text-slate-700">${t('msg.no_data', 'No stock records found')}</div>
                     <p class="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-4">
@@ -152,6 +179,30 @@ function _renderStockTbody() {
             </tr>
         `;
     }).join('');
+}
+
+
+function _renderInventoryTabs() {
+    return `
+        <div class="flex items-center gap-1.5 p-1 bg-slate-200/80 rounded-xl border border-slate-200 overflow-x-auto text-xs flex-shrink-0">
+            <button class="px-3.5 py-1.5 font-semibold rounded-lg transition-all flex items-center gap-1.5 ${inventoryTab === 'stock' ? 'bg-white text-teal-900 shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'}" onclick="switchInventoryTab('stock')">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                <span>${t('inv.tab_stock', 'Stock on Hand')}</span>
+            </button>
+            <button class="px-3.5 py-1.5 font-semibold rounded-lg transition-all flex items-center gap-1.5 ${inventoryTab === 'all_batches' ? 'bg-white text-teal-900 shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'}" onclick="switchInventoryTab('all_batches')">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <span>${t('inv.filter_all_batches', 'All Medicine Batches')}</span>
+            </button>
+            <button class="px-3.5 py-1.5 font-semibold rounded-lg transition-all flex items-center gap-1.5 ${inventoryTab === 'expiring_soon' ? 'bg-amber-100 text-amber-900 shadow-sm font-bold border border-amber-200' : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'}" onclick="switchInventoryTab('expiring_soon')">
+                <svg class="w-3.5 h-3.5 text-amber-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+                <span>${t('inv.filter_expiring_soon', 'Expiring within 90 Days')}</span>
+            </button>
+            <button class="px-3.5 py-1.5 font-semibold rounded-lg transition-all flex items-center gap-1.5 ${inventoryTab === 'expired' ? 'bg-rose-100 text-rose-900 shadow-sm font-bold border border-rose-200' : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'}" onclick="switchInventoryTab('expired')">
+                <svg class="w-3.5 h-3.5 text-rose-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                <span>${t('inv.filter_expired', 'Expired Batches')}</span>
+            </button>
+        </div>
+    `;
 }
 
 function _renderStockTable(container) {

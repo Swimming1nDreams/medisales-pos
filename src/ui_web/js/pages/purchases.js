@@ -191,7 +191,7 @@ window.openPurchaseModal = async function() {
                     <div class="col-span-12 sm:col-span-3">
                         <label class="form-label" for="pm-item-unit">${t('pur.packaging_unit', 'Intake Unit')} *</label>
                         <select id="pm-item-unit" class="form-select text-xs font-semibold">
-                            <option value="1">Base Unit</option>
+                            <option value="1">${t('pur.base_unit', 'Base Unit')}</option>
                         </select>
                     </div>
 
@@ -311,7 +311,7 @@ window.pmProductSelected = function() {
             });
             unitSel.innerHTML = opts;
         } else {
-            unitSel.innerHTML = `<option value="1">Base Unit</option>`;
+            unitSel.innerHTML = `<option value="1">${t('pur.base_unit', 'Base Unit')}</option>`;
         }
     }
 };
@@ -376,7 +376,7 @@ window.pmAddItem = function(e) {
     document.getElementById('pm-item-batch').value = '';
     document.getElementById('pm-item-expiry').value = '';
     document.getElementById('pm-medicine-fields').classList.add('hidden');
-    if (unitSel) unitSel.innerHTML = '<option value="1">Base Unit</option>';
+    if (unitSel) unitSel.innerHTML = '<option value="1">${t('pur.base_unit', 'Base Unit')}</option>';
     
     pmRenderCart();
 };
@@ -391,7 +391,7 @@ function pmRenderCart() {
     let total = 0;
     
     if (purchCart.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="px-2.5 py-3 text-center text-slate-400">No items added to invoice yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="px-2.5 py-3 text-center text-slate-400">${t('pur.empty_items', 'No items added to purchase invoice yet.')}</td></tr>`;
         document.getElementById('pm-total').innerText = '0 Ks';
         return;
     }

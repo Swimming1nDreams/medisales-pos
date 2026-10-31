@@ -215,7 +215,7 @@ window.openSupplierModal = function(s = null) {
             <div>
                 <label class="form-label" for="s-name">${t('sup.field_name', 'Supplier / Company Name')} *</label>
                 <input type="text" id="s-name" class="form-input text-xs" required placeholder="e.g. AA Medical Products Ltd, Mega Lifesciences" value="${isEdit ? escapeHtml(s.name) : ''}">
-                <span class="form-hint">Official trade or distributor name.</span>
+                <span class="form-hint">${t('sup.help_desc', 'Official trade or distributor name.')}</span>
             </div>
             <div>
                 <label class="form-label" for="s-phone">${t('sup.field_phone', 'Contact Phone Number')} *</label>

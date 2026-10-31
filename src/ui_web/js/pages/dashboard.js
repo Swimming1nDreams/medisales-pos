@@ -53,6 +53,95 @@ async function renderDashboard(container) {
     container.innerHTML = `
         <div class="space-y-4">
             
+            <!-- Hero Welcome & Dispensary Status Banner -->
+            <div class="card p-4 bg-gradient-to-r from-slate-900 to-teal-950 text-white border-0 shadow-md">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-base font-bold text-white tracking-wide">${t('dash.welcome_title', 'Welcome to Say Mahar Store')} 👋</h2>
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-teal-500/20 text-teal-300 border border-teal-500/30">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                ${t('dash.status_ready', 'Dispensary Offline Ready')}
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-300 mt-1 max-w-xl leading-relaxed">
+                            ${t('dash.welcome_sub', 'Dispensary and retail management at your fingertips. All systems operating offline.')}
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2 self-start sm:self-auto font-mono text-xs text-slate-300 bg-white/10 px-3 py-1.5 rounded-lg border border-white/10">
+                        <svg class="w-3.5 h-3.5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                        <span>${data.date || new Date().toISOString().split('T')[0]}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Action Launchpad (4 Friendly Visual Cards) -->
+            <div>
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2.5 flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5 text-teal-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    <span>${t('dash.quick_launch', 'Quick Action Launchpad')}</span>
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    
+                    <!-- 1. POS Sale -->
+                    <div class="launchpad-card group border-teal-200/80 hover:border-teal-400 bg-gradient-to-br from-white to-teal-50/30" onclick="navigate('sales')">
+                        <div class="flex items-start justify-between">
+                            <div class="icon-bubble bg-teal-100 text-teal-800">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                            </div>
+                            <span class="badge badge-success text-[10px] font-mono font-bold">F1 ${t('dash.shortcut_tag', 'Shortcut')}</span>
+                        </div>
+                        <div class="mt-3">
+                            <h4 class="text-xs font-bold text-slate-900 group-hover:text-teal-800 transition-colors">${t('dash.launch_pos_title', 'Open POS Register (F1)')}</h4>
+                            <p class="text-[11px] text-slate-500 mt-0.5 leading-snug">${t('dash.launch_pos_sub', 'Quick checkout and cash dispensing')}</p>
+                        </div>
+                    </div>
+
+                    <!-- 2. Add Product -->
+                    <div class="launchpad-card group border-sky-200/80 hover:border-sky-400 bg-gradient-to-br from-white to-sky-50/30" onclick="navigate('products')">
+                        <div class="flex items-start justify-between">
+                            <div class="icon-bubble bg-sky-100 text-sky-800">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                            </div>
+                            <span class="badge badge-info text-[10px] font-bold">+ ${t('btn.add', 'Add')}</span>
+                        </div>
+                        <div class="mt-3">
+                            <h4 class="text-xs font-bold text-slate-900 group-hover:text-sky-800 transition-colors">${t('dash.launch_prod_title', 'Add New Product')}</h4>
+                            <p class="text-[11px] text-slate-500 mt-0.5 leading-snug">${t('dash.launch_prod_sub', 'Register medicines, prices and units')}</p>
+                        </div>
+                    </div>
+
+                    <!-- 3. Receive Purchase -->
+                    <div class="launchpad-card group border-indigo-200/80 hover:border-indigo-400 bg-gradient-to-br from-white to-indigo-50/30" onclick="navigate('purchases')">
+                        <div class="flex items-start justify-between">
+                            <div class="icon-bubble bg-indigo-100 text-indigo-800">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                            </div>
+                            <span class="badge badge-neutral text-[10px] font-bold">${t('nav.purchases', 'Purchases')}</span>
+                        </div>
+                        <div class="mt-3">
+                            <h4 class="text-xs font-bold text-slate-900 group-hover:text-indigo-800 transition-colors">${t('dash.launch_pur_title', 'Receive Purchase')}</h4>
+                            <p class="text-[11px] text-slate-500 mt-0.5 leading-snug">${t('dash.launch_pur_sub', 'Stock receiving from suppliers')}</p>
+                        </div>
+                    </div>
+
+                    <!-- 4. Customer Credit Ledger -->
+                    <div class="launchpad-card group border-amber-200/80 hover:border-amber-400 bg-gradient-to-br from-white to-amber-50/30" onclick="navigate('customers')">
+                        <div class="flex items-start justify-between">
+                            <div class="icon-bubble bg-amber-100 text-amber-800">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                            </div>
+                            <span class="badge badge-warning text-[10px] font-bold">${t('nav.customers', 'Credit Book')}</span>
+                        </div>
+                        <div class="mt-3">
+                            <h4 class="text-xs font-bold text-slate-900 group-hover:text-amber-800 transition-colors">${t('dash.launch_cust_title', 'Customer Credit Ledger')}</h4>
+                            <p class="text-[11px] text-slate-500 mt-0.5 leading-snug">${t('dash.launch_cust_sub', 'Neighborhood credit and debt settlement')}</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            
             <!-- Section 1: Today's Financial Overview -->
             <div>
                 <div class="flex items-center justify-between mb-2">
@@ -66,33 +155,42 @@ async function renderDashboard(container) {
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     
                     <!-- Today's Revenue -->
-                    <div class="kpi-card">
+                    <div class="kpi-card border-slate-200">
                         <div class="flex items-center justify-between">
-                            <span class="kpi-title">${t('dash.revenue_today', 'Sales Revenue')}</span>
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-xs">$</div>
+                                <span class="kpi-title">${t('dash.revenue_today', 'Sales Revenue')}</span>
+                            </div>
                             <span class="badge badge-success text-[10px]">${salesCount} ${t('sales.cart_items', 'sales')}</span>
                         </div>
                         <div class="kpi-value text-slate-900">${formatMoney(revenue)}</div>
                         <div class="kpi-sub">
-                            <span>${t('rep.kpi_cogs', 'Cost of Goods')}: ${formatMoney(cogs)}</span>
+                            <span>${t('dash.val_cogs_clean', 'Stock Acquisition Cost')}: ${formatMoney(cogs)}</span>
                         </div>
                     </div>
 
                     <!-- Gross Profit -->
-                    <div class="kpi-card">
+                    <div class="kpi-card border-slate-200">
                         <div class="flex items-center justify-between">
-                            <span class="kpi-title">${t('dash.gross_profit_today', 'Gross Profit')}</span>
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-lg bg-teal-50 text-teal-700 flex items-center justify-center font-bold text-xs">%</div>
+                                <span class="kpi-title">${t('dash.gross_profit_today', 'Gross Profit')}</span>
+                            </div>
                             <span class="badge badge-teal text-[10px]">${marginPct}%</span>
                         </div>
                         <div class="kpi-value text-teal-800">${formatMoney(grossProfit)}</div>
                         <div class="kpi-sub">
-                            <span>${t('rep.kpi_gross_profit', 'Revenue minus COGS')}</span>
+                            <span>${t('dash.val_gross_clean', 'Revenue minus product costs')}</span>
                         </div>
                     </div>
 
                     <!-- Operating Expenses -->
-                    <div class="kpi-card">
+                    <div class="kpi-card border-slate-200">
                         <div class="flex items-center justify-between">
-                            <span class="kpi-title">${t('nav.expenses', 'Operating Expenses')}</span>
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center font-bold text-xs">-</div>
+                                <span class="kpi-title">${t('nav.expenses', 'Operating Expenses')}</span>
+                            </div>
                             <span class="badge ${expenses > 0 ? 'badge-warning' : 'badge-neutral'} text-[10px]">${t('rep.date_today', 'Today')}</span>
                         </div>
                         <div class="kpi-value text-slate-800">${formatMoney(expenses)}</div>
@@ -104,12 +202,15 @@ async function renderDashboard(container) {
                     <!-- Net Operating Profit -->
                     <div class="kpi-card ${netProfit > 0 ? 'bg-emerald-50/70 border-emerald-300/80' : (netProfit < 0 ? 'bg-rose-50/70 border-rose-300/80' : 'bg-white border-slate-200')}">
                         <div class="flex items-center justify-between">
-                            <span class="kpi-title ${netProfit > 0 ? 'text-emerald-900 font-bold' : (netProfit < 0 ? 'text-rose-900 font-bold' : 'text-slate-600 font-semibold')}">${t('rep.kpi_net_profit', 'Net Operating Profit')}</span>
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-lg ${netProfit > 0 ? 'bg-emerald-100 text-emerald-800' : (netProfit < 0 ? 'bg-rose-100 text-rose-800' : 'bg-slate-100 text-slate-700')} flex items-center justify-center font-bold text-xs">=</div>
+                                <span class="kpi-title ${netProfit > 0 ? 'text-emerald-900 font-bold' : (netProfit < 0 ? 'text-rose-900 font-bold' : 'text-slate-600 font-semibold')}">${t('rep.kpi_net_profit', 'Net Operating Profit')}</span>
+                            </div>
                             <span class="badge ${netProfit > 0 ? 'badge-success' : (netProfit < 0 ? 'badge-danger' : 'badge-neutral')} text-[10px] font-bold">${netProfit > 0 ? t('set.recon_surplus', 'Surplus') : (netProfit < 0 ? t('set.recon_shortage', 'Deficit') : t('dash.balanced', 'Balanced'))}</span>
                         </div>
                         <div class="kpi-value ${netProfit > 0 ? 'text-emerald-800' : (netProfit < 0 ? 'text-rose-700' : 'text-slate-800')}">${formatMoney(netProfit)}</div>
                         <div class="kpi-sub">
-                            <span>${t('rep.kpi_net_profit', 'Gross profit minus expenses')}</span>
+                            <span>${t('dash.val_net_clean', 'Net cash profit after all expenses')}</span>
                         </div>
                     </div>
 
@@ -121,29 +222,44 @@ async function renderDashboard(container) {
                 <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">${t('nav.group.finance', 'Store Balances & Working Capital')}</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     
-                    <div class="card p-3.5 flex items-center justify-between">
-                        <div>
-                            <span class="text-[11px] font-semibold text-slate-600 uppercase tracking-wider block">${t('dash.inventory_valuation', 'Total Inventory Valuation')}</span>
-                            <div class="text-lg font-bold font-mono text-slate-900 mt-0.5">${formatMoney(invValue)}</div>
-                            <span class="text-[11px] text-slate-500 mt-0.5 block">${t('dash.valuation_basis', 'FEFO (Meds) & WAC (General)')}</span>
+                    <div class="card p-4 flex items-center justify-between">
+                        <div class="flex items-start gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                            </div>
+                            <div>
+                                <span class="text-[11px] font-semibold text-slate-600 uppercase tracking-wider block">${t('dash.inventory_valuation', 'Total Inventory Valuation')}</span>
+                                <div class="text-lg font-bold font-mono text-slate-900 mt-0.5">${formatMoney(invValue)}</div>
+                                <span class="text-[11px] text-slate-500 mt-0.5 block">${t('dash.val_inv_clean', 'Total Stock on Hand Value')}</span>
+                            </div>
                         </div>
                         <button class="btn btn-sm btn-secondary text-slate-700" onclick="navigate('inventory')">${t('dash.view_inventory', 'View Stock')}</button>
                     </div>
 
-                    <div class="card p-3.5 flex items-center justify-between">
-                        <div>
-                            <span class="text-[11px] font-semibold text-slate-600 uppercase tracking-wider block">${t('pur.outstanding', 'Supplier Payables')}</span>
-                            <div class="text-lg font-bold font-mono ${supplierDue > 0 ? 'text-amber-800' : 'text-slate-900'} mt-0.5">${formatMoney(supplierDue)}</div>
-                            <span class="text-[11px] text-slate-500 mt-0.5 block">${t('nav.suppliers', 'Pending vendor settlement')}</span>
+                    <div class="card p-4 flex items-center justify-between">
+                        <div class="flex items-start gap-3">
+                            <div class="w-10 h-10 rounded-xl ${supplierDue > 0 ? 'bg-amber-50 text-amber-700' : 'bg-slate-50 text-slate-600'} flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                            </div>
+                            <div>
+                                <span class="text-[11px] font-semibold text-slate-600 uppercase tracking-wider block">${t('pur.outstanding', 'Supplier Payables')}</span>
+                                <div class="text-lg font-bold font-mono ${supplierDue > 0 ? 'text-amber-800' : 'text-slate-900'} mt-0.5">${formatMoney(supplierDue)}</div>
+                                <span class="text-[11px] text-slate-500 mt-0.5 block">${t('nav.suppliers', 'Pending vendor settlement')}</span>
+                            </div>
                         </div>
                         <button class="btn btn-sm btn-secondary text-slate-700" onclick="navigate('suppliers')">${t('dash.btn_view_suppliers', 'View Payables')}</button>
                     </div>
 
-                    <div class="card p-3.5 flex items-center justify-between">
-                        <div>
-                            <span class="text-[11px] font-semibold text-slate-600 uppercase tracking-wider block">${t('inv.total_skus', 'Cataloged Inventory')}</span>
-                            <div class="text-lg font-bold font-mono text-slate-900 mt-0.5">${formatNumber(activeProducts)} ${t('status.active', 'Active Items')}</div>
-                            <span class="text-[11px] text-slate-500 mt-0.5 block">${t('prod.type_all', 'Medicines & general products')}</span>
+                    <div class="card p-4 flex items-center justify-between">
+                        <div class="flex items-start gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-700 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                            </div>
+                            <div>
+                                <span class="text-[11px] font-semibold text-slate-600 uppercase tracking-wider block">${t('inv.total_skus', 'Cataloged Inventory')}</span>
+                                <div class="text-lg font-bold font-mono text-slate-900 mt-0.5">${formatNumber(activeProducts)} <span class="text-xs font-normal text-slate-500 font-sans">(${t('status.active', 'Active')})</span></div>
+                                <span class="text-[11px] text-slate-500 mt-0.5 block">${t('prod.type_all', 'Medicines & general products')}</span>
+                            </div>
                         </div>
                         <button class="btn btn-sm btn-secondary text-slate-700" onclick="navigate('products')">${t('dash.btn_view_products', 'View Catalog')}</button>
                     </div>
@@ -157,13 +273,13 @@ async function renderDashboard(container) {
                 <!-- Low Stock Alert Box -->
                 <div class="card p-3.5 flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-md flex items-center justify-center flex-shrink-0 ${lowStockCount > 0 ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600'}">
-                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${lowStockCount > 0 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-50 text-emerald-700'}">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
                         </div>
                         <div>
                             <h4 class="text-xs font-bold text-slate-900">${t('dash.low_stock_alerts', 'Low Stock Reorder Alerts')}</h4>
                             <p class="text-[11px] text-slate-500 mt-0.5">
-                                ${lowStockCount > 0 ? `<span class="font-semibold text-amber-800">${lowStockCount} items</span> ${t('status.low_stock', 'below reorder alert level')}` : t('dash.no_low_stock', 'All inventory levels are currently sufficient')}
+                                ${lowStockCount > 0 ? `<span class="font-semibold text-amber-800">${lowStockCount} items</span> ${t('status.low_stock', 'below reorder alert level')}` : `<span class="text-emerald-700 font-semibold">&#10003; ${t('dash.health_all_ok', 'All Stock Sufficient')}</span>`}
                             </p>
                         </div>
                     </div>
@@ -173,14 +289,14 @@ async function renderDashboard(container) {
                 <!-- Medicine Expiry Protection Box -->
                 <div class="card p-3.5 flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-md flex items-center justify-center flex-shrink-0 ${(expiredCount + expiringSoonCount) > 0 ? 'bg-rose-100 text-rose-800' : 'bg-slate-100 text-slate-600'}">
-                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${(expiredCount + expiringSoonCount) > 0 ? 'bg-rose-100 text-rose-800' : 'bg-emerald-50 text-emerald-700'}">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
                         </div>
                         <div>
                             <h4 class="text-xs font-bold text-slate-900">${t('inv.tab_batches', 'FEFO Expiry Tracking')}</h4>
                             <p class="text-[11px] text-slate-500 mt-0.5">
                                 ${expiredCount > 0 ? `<span class="font-bold text-rose-700">${expiredCount} ${t('status.expired', 'expired')}</span> • ` : ''}
-                                ${expiringSoonCount > 0 ? `<span class="font-semibold text-amber-700">${expiringSoonCount} ${t('status.expiring_soon', 'expiring within 90 days')}</span>` : t('dash.no_expiring_soon', '0 batches expiring soon')}
+                                ${expiringSoonCount > 0 ? `<span class="font-semibold text-amber-700">${expiringSoonCount} ${t('status.expiring_soon', 'expiring within 90 days')}</span>` : `<span class="text-emerald-700 font-semibold">&#10003; ${t('dash.health_expiring_ok', 'No Expiring Batches')}</span>`}
                             </p>
                         </div>
                     </div>
@@ -249,7 +365,7 @@ async function renderDashboard(container) {
                         
                         ${lowStockItems.length === 0 ? `
                             <div class="py-3 text-center text-slate-500 text-xs">
-                                <div class="text-emerald-700 font-semibold text-xs mb-0.5">&#10003; ${t('status.normal', 'All Stock Healthy')}</div>
+                                <div class="text-emerald-700 font-semibold text-xs mb-0.5">&#10003; ${t('dash.health_all_ok', 'All Stock Sufficient')}</div>
                                 <span class="text-[11px] text-slate-400">${t('dash.no_low_stock', 'No items are currently below reorder thresholds.')}</span>
                             </div>
                         ` : `
@@ -273,15 +389,15 @@ async function renderDashboard(container) {
                     <div class="card p-3.5 bg-slate-50/70">
                         <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wide mb-2">${t('set.store_profile', 'Dispensary Operations Guide')}</h4>
                         <div class="space-y-1.5 text-xs">
-                            <div class="flex items-center justify-between p-2 rounded bg-white border border-slate-200">
+                            <div class="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200">
                                 <span class="text-slate-700 font-medium">1. ${t('sales.pos_tab', 'Fast Cashier Checkout')}</span>
                                 <span class="font-mono text-[10px] bg-slate-100 border border-slate-300 px-1.5 py-0.5 rounded text-slate-700 font-bold">F1</span>
                             </div>
-                            <div class="flex items-center justify-between p-2 rounded bg-white border border-slate-200">
+                            <div class="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200">
                                 <span class="text-slate-700 font-medium">2. ${t('set.expiry_rule', 'Strict Medicine FEFO')}</span>
                                 <span class="text-[10px] text-teal-800 font-semibold">${t('status.expiring_soon', 'Earliest Expiry First')}</span>
                             </div>
-                            <div class="flex items-center justify-between p-2 rounded bg-white border border-slate-200">
+                            <div class="flex items-center justify-between p-2 rounded-lg bg-white border border-slate-200">
                                 <span class="text-slate-700 font-medium">3. ${t('sup.btn_record_payment', 'Supplier Settlement')}</span>
                                 <span class="text-[10px] text-slate-600 font-mono">${formatMoney(supplierDue)}</span>
                             </div>

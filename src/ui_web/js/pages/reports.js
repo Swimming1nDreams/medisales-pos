@@ -97,7 +97,7 @@ async function _renderFinancialReport(container) {
                     <p class="text-xs text-slate-500 font-mono mt-0.5">${t('sales.filter_start', 'Period:')} ${reportStart} &nbsp;to&nbsp; ${reportEnd}</p>
                 </div>
                 <div class="text-right">
-                    <span class="badge badge-neutral text-xs">Myanmar Retail GAAP</span>
+                    <span class="badge badge-neutral text-xs">${t('rep.gaap_note', 'Myanmar Retail Accounting Standard')}</span>
                     <div class="text-[11px] text-slate-400 mt-1">MMK (Ks)</div>
                 </div>
             </div>
@@ -127,7 +127,7 @@ async function _renderFinancialReport(container) {
                     <div class="p-4 pt-3 border-t border-slate-200 bg-slate-50/50 flex justify-between items-center">
                         <div>
                             <span class="font-bold text-slate-900 text-xs block">${t('rep.kpi_gross_profit', 'GROSS PROFIT')}</span>
-                            <span class="text-[11px] text-slate-400">Revenue minus stock purchase cost</span>
+                            <span class="text-[11px] text-slate-400">${t('rep.cogs_note', 'Revenue minus stock acquisition cost')}</span>
                         </div>
                         <span class="font-mono font-black text-base text-teal-800 tabular-nums">${formatMoney(grossProfit)}</span>
                     </div>

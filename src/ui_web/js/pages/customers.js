@@ -30,10 +30,31 @@ function _renderCustomersTbody() {
     if (countHeader) countHeader.innerHTML = `${t('col.showing_accounts', 'Showing {count} of {total} accounts').replace('{count}', filtered.length).replace('{total}', allCustomers.length)}`;
 
     if (filtered.length === 0) {
+        if (allCustomers.length === 0 && !customerSearchTerm && !customerFilterDebtOnly) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="py-14 px-6 text-center">
+                        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-amber-50 text-amber-700 mb-3 border border-amber-100 shadow-sm">
+                            <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                        </div>
+                        <div class="text-sm font-bold text-slate-800">${t('cust.empty_welcome_title', 'Neighborhood Customer Credit Ledger')}</div>
+                        <p class="text-xs text-slate-500 max-w-md mx-auto mt-1.5 mb-5 leading-relaxed">
+                            ${t('cust.empty_welcome_desc', 'Track credit sales, store accounts, and customer debt settlements for neighborhood regulars.')}
+                        </p>
+                        <button class="btn btn-primary inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold" onclick="openCustomerModal()">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            <span>${t('cust.empty_add_first', 'Register First Customer')}</span>
+                        </button>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
         tbody.innerHTML = `
             <tr>
                 <td colspan="6" class="py-12 text-center text-slate-400 text-xs">
-                    ${allCustomers.length === 0 ? t('cust.no_data', 'No customers registered yet.') : t('msg.no_data', 'No customers match your search query.')}
+                    ${t('msg.no_data', 'No customers match your search query.')}
                 </td>
             </tr>
         `;
@@ -228,7 +249,7 @@ window.openCustomerModal = function(c = null) {
             <div>
                 <label class="form-label" for="cust-name">${t('cust.field_name', 'Customer Full Name / Nickname')} *</label>
                 <input type="text" id="cust-name" class="form-input text-xs" required placeholder="e.g. ဦးသန်းနိုင်, ဒေါ်လှလှ (မနက်ပိုင်းဖောက်သည်)" value="${isEdit ? escapeHtml(c.name) : ''}">
-                <span class="form-hint">Name of neighborhood neighbor or regular patient.</span>
+                <span class="form-hint">${t('cust.help_desc', 'Name of neighborhood neighbor or regular patient.')}</span>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
@@ -250,7 +271,7 @@ window.openCustomerModal = function(c = null) {
             ${isEdit ? `
                 <div class="pt-2 border-t border-slate-100 flex items-center gap-2">
                     <input type="checkbox" id="cust-active" class="rounded border-slate-300 text-teal-600 focus:ring-teal-500 h-4 w-4" ${c.is_active ? 'checked' : ''}>
-                    <label for="cust-active" class="font-medium text-slate-700 text-xs">Customer Account Active</label>
+                    <label for="cust-active" class="font-medium text-slate-700 text-xs">${t('cust.status_active', 'Customer Account Active')}</label>
                 </div>
             ` : ''}
         </form>
@@ -375,15 +396,15 @@ window.openCustomerStatementModal = async function(id) {
                     <thead class="sticky top-0 bg-slate-100 z-10">
                         <tr>
                             <th class="th">Date & Ref</th>
-                            <th class="th">Description</th>
+                            <th class="th">${t('col.description', 'Description')}</th>
                             <th class="th text-right text-rose-700">Credit (+)</th>
                             <th class="th text-right text-emerald-700">Repaid (-)</th>
-                            <th class="th text-right">Balance</th>
+                            <th class="th text-right">${t('col.balance', 'Balance')}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 bg-white">
                         ${stmt.entries.length === 0 ? `
-                            <tr><td colspan="5" class="py-8 text-center text-slate-400">No transactions recorded for this customer.</td></tr>
+                            <tr><td colspan="5" class="py-8 text-center text-slate-400">${t('cust.no_transactions', 'No transactions recorded for this customer.')}</td></tr>
                         ` : stmt.entries.map(e => `
                             <tr class="tr-hover">
                                 <td class="td whitespace-nowrap">

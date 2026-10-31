@@ -85,27 +85,68 @@ function _renderProductsTbody() {
     }
 
     if (filtered.length === 0) {
+        if (allProducts.length === 0 && !currentSearch && !currentCategoryFilter && currentTypeFilter === 'all') {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="py-14 px-6 text-center">
+                        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-teal-50 text-teal-700 mb-3 border border-teal-100 shadow-sm">
+                            <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                        </div>
+                        <div class="text-sm font-bold text-slate-800">${t('prod.empty_welcome_title', 'Start by Cataloging Your Products')}</div>
+                        <p class="text-xs text-slate-500 max-w-lg mx-auto mt-1.5 mb-5 leading-relaxed">
+                            ${t('prod.empty_welcome_desc', 'Easily catalog medicines and consumer products for your shop. Configure custom units like strip, box, carton, and track batch expiries.')}
+                        </p>
+                        <div class="mb-6">
+                            <button class="btn btn-primary inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold" onclick="openProductModal()">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                                <span>${t('prod.empty_add_first', 'Catalog First Product')}</span>
+                            </button>
+                        </div>
+
+                        <!-- 3 Dispensary Guide Cards -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 max-w-2xl mx-auto text-left">
+                            <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/70">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="w-6 h-6 rounded-lg bg-teal-100 text-teal-800 flex items-center justify-center text-xs font-bold">💊</span>
+                                    <span class="text-xs font-bold text-slate-800">${t('prod.guide_medicine', 'FEFO Expiry Tracking')}</span>
+                                </div>
+                                <p class="text-[11px] text-slate-500 leading-snug">${t('prod.guide_medicine_desc', 'Strict batch expiry tracking. Dispenses earliest expiring batches first.')}</p>
+                            </div>
+                            <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/70">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="w-6 h-6 rounded-lg bg-sky-100 text-sky-800 flex items-center justify-center text-xs font-bold">📦</span>
+                                    <span class="text-xs font-bold text-slate-800">${t('prod.guide_general', 'General Merchandise')}</span>
+                                </div>
+                                <p class="text-[11px] text-slate-500 leading-snug">${t('prod.guide_general_desc', 'Track consumer goods, snacks, and toiletries with simple stock tracking.')}</p>
+                            </div>
+                            <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/70">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="w-6 h-6 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center text-xs font-bold">🏷️</span>
+                                    <span class="text-xs font-bold text-slate-800">${t('prod.guide_packaging', 'Multi-Unit Packaging')}</span>
+                                </div>
+                                <p class="text-[11px] text-slate-500 leading-snug">${t('prod.guide_packaging_desc', 'Set separate prices for pieces, strips, boxes, and cartons.')}</p>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
         tbody.innerHTML = `
             <tr>
-                <td colspan="6" class="py-16 text-center">
+                <td colspan="6" class="py-14 text-center">
                     <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-slate-100 text-slate-400 mb-3">
                         <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                     </div>
-                    <div class="text-sm font-semibold text-slate-700">${t('msg.no_data', 'No matching products found')}</div>
+                    <div class="text-sm font-semibold text-slate-700">${t('prod.empty_search_title', 'No Matching Products Found')}</div>
                     <p class="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-4">
-                        ${t('prod.empty_desc', 'No products match your current search terms or category/type filters.')}
+                        ${t('prod.empty_search_desc', 'No products match your search keyword or selected category.')}
                     </p>
-                    ${(currentSearch || currentCategoryFilter || currentTypeFilter !== 'all') ? `
-                        <button class="btn btn-sm btn-secondary inline-flex items-center gap-1.5" onclick="clearProductFilters()">
-                            <svg class="w-3.5 h-3.5 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                            <span>${t('btn.clear', 'Clear Search & Filters')}</span>
-                        </button>
-                    ` : `
-                        <button class="btn btn-sm btn-primary inline-flex items-center gap-1.5" onclick="openProductModal()">
-                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                            <span>${t('prod.add_button', 'Add New Product')}</span>
-                        </button>
-                    `}
+                    <button class="btn btn-sm btn-secondary inline-flex items-center gap-1.5" onclick="clearProductFilters()">
+                        <svg class="w-3.5 h-3.5 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        <span>${t('btn.clear', 'Clear Search & Filters')}</span>
+                    </button>
                 </td>
             </tr>
         `;
@@ -345,7 +386,7 @@ window.openProductModal = function(p = null) {
                 <div>
                     <label class="form-label" for="p-min">${t('prod.field_min_stock', 'Reorder Alert Level')} *</label>
                     <input type="number" id="p-min" class="form-input text-xs font-mono" required min="0" placeholder="5" value="${isEdit ? p.min_stock_level : 5}">
-                    <span class="form-hint">Triggers low stock notice when below this.</span>
+                    <span class="form-hint">${t('status.low_stock', 'Triggers low stock notice when below this.')}</span>
                 </div>
             </div>
 

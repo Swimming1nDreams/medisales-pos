@@ -115,7 +115,7 @@ function _renderPosView(container) {
                 <!-- Footer Summary of in-stock items -->
                 <div class="px-3.5 py-2 border-t border-slate-200 bg-white text-[11px] text-slate-500 flex justify-between items-center flex-shrink-0">
                     <span id="sales-products-count" class="font-medium">${t('status.active', 'Available Products')}: 0</span>
-                    <span class="text-teal-800 font-medium">Click product or press Enter to add</span>
+                    <span class="text-teal-800 font-medium">${t('sales.hint_click_add', 'Click product or press Enter to add')}</span>
                 </div>
             </div>
 
@@ -172,7 +172,7 @@ function _renderPosView(container) {
                     <div class="p-3 bg-gradient-to-r from-teal-50/90 to-emerald-50/90 rounded-xl border border-teal-200/90 flex justify-between items-center shadow-xs">
                         <div>
                             <span class="text-xs font-bold uppercase tracking-wider text-teal-900 block">${t('sales.total_due', 'Net Total Due')}</span>
-                            <span class="text-[10px] text-teal-700/80 font-medium">Payable Amount</span>
+                            <span class="text-[10px] text-teal-700/80 font-medium">${t('sales.payable_amount', 'Payable Amount')}</span>
                         </div>
                         <div id="sales-cart-total" data-subtotal="0" data-val="0" class="text-2xl font-black font-mono text-teal-900 tabular-nums whitespace-nowrap">0 Ks</div>
                     </div>
@@ -484,10 +484,17 @@ function _renderSalesCart() {
     
     if (salesCart.length === 0) {
         container.innerHTML = `
-            <div class="h-40 flex flex-col items-center justify-center text-slate-400">
-                <svg class="w-8 h-8 text-slate-300 mb-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-                <p class="text-xs font-semibold text-slate-600">${t('sales.cart_title', 'Cart is empty')}</p>
-                <p class="text-[11px] text-slate-400 mt-0.5">${t('sales.cart_empty', 'Select products from the catalog to add items')}</p>
+            <div class="h-44 flex flex-col items-center justify-center text-center p-4">
+                <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center mb-2.5 border border-teal-100 shadow-sm">
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                </div>
+                <p class="text-xs font-bold text-slate-800">${t('sales.empty_cart_title', 'Scan barcode or select product to sell (F1)')}</p>
+                <p class="text-[11px] text-slate-500 mt-1 max-w-xs leading-relaxed">${t('sales.empty_cart_sub', 'Search by product name, category, or scan barcode to add items to cart.')}</p>
+                <div class="flex items-center gap-1.5 mt-3 flex-wrap justify-center">
+                    <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-mono text-[10px] font-bold border border-slate-200">F1 ${t('nav.sales', 'Sale')}</span>
+                    <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-mono text-[10px] font-bold border border-slate-200">Enter ${t('btn.add', 'Add')}</span>
+                    <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-mono text-[10px] font-bold border border-slate-200">F4 ${t('sales.cash_tender', 'Checkout')}</span>
+                </div>
             </div>
         `;
     } else {
@@ -504,7 +511,7 @@ function _renderSalesCart() {
                         </div>
                         <div class="flex items-center gap-2 mt-0.5">
                             <span class="text-[11px] font-mono text-slate-600 font-semibold">${formatMoney(c.unit_price)}</span>
-                            ${c.product.is_medicine ? '<span class="text-[9px] bg-teal-50 text-teal-800 px-1 rounded border border-teal-200">Auto FEFO</span>' : ''}
+                            ${c.product.is_medicine ? `<span class="text-[9px] bg-teal-50 text-teal-800 px-1 rounded border border-teal-200">${t('sales.auto_fefo', 'Auto FEFO')}</span>` : ''}
                         </div>
                     </div>
                     
