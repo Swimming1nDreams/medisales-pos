@@ -41,6 +41,26 @@ window.exportProductsExcel = async function() {
     }
 };
 
+function formatSmartStock(qty, baseUnit, packagings) {
+    if (!packagings || packagings.length === 0 || qty <= 0) {
+        return `${qty} ${baseUnit || 'units'}`;
+    }
+    const sorted = [...packagings].sort((a, b) => b.conversion_factor - a.conversion_factor);
+    let rem = qty;
+    const parts = [];
+    for (const pkg of sorted) {
+        const count = Math.floor(rem / pkg.conversion_factor);
+        if (count > 0) {
+            parts.push(`${count} ${pkg.unit_name}`);
+            rem %= pkg.conversion_factor;
+        }
+    }
+    if (rem > 0 || parts.length === 0) {
+        parts.push(`${rem} ${baseUnit}`);
+    }
+    return `${qty} ${baseUnit} (${parts.join(' ')})`;
+}
+
 function _renderProductsTbody() {
     const tbody = document.getElementById('products-tbody');
     if (!tbody) return;
@@ -101,18 +121,31 @@ function _renderProductsTbody() {
         const highlightedCat = (typeof window.highlightSearchMatch === 'function')
             ? window.highlightSearchMatch(catName, currentSearch)
             : escapeHtml(catName);
+        const packagings = p.packagings || [];
 
         return `
             <tr class="tr-hover ${!p.is_active ? 'opacity-60 bg-slate-50/50' : ''}">
                 <td class="td">
                     <div class="font-bold text-slate-900 text-xs leading-snug break-words" title="${escapeHtml(p.name)}">${highlightedName}</div>
-                    <div class="flex items-center gap-1.5 mt-0.5">
+                    <div class="flex items-center gap-1.5 mt-0.5 flex-wrap">
                         <span class="text-[10px] text-slate-500">${t('col.unit', 'Unit')}: ${escapeHtml(p.unit_measure || 'piece')}</span>
                         <span class="text-slate-300">•</span>
                         ${p.is_medicine ? 
                             `<span class="badge badge-teal text-[9px] py-0">${t('prod.type_medicine', 'Medicine (FEFO)')}</span>` : 
                             `<span class="badge badge-neutral text-[9px] py-0">${t('prod.type_general', 'General Goods')}</span>`}
                     </div>
+                    ${packagings.length > 0 ? `
+                        <div class="flex flex-wrap items-center gap-1 mt-1 text-[10px]">
+                            <span class="px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 border border-slate-200">
+                                1 ${escapeHtml(p.unit_measure)}: ${formatMoney(p.selling_price)}
+                            </span>
+                            ${packagings.map(pkg => `
+                                <span class="px-1.5 py-0.2 rounded bg-teal-50 text-teal-800 border border-teal-200 font-semibold" title="1 ${escapeHtml(pkg.unit_name)} = ${pkg.conversion_factor} ${escapeHtml(p.unit_measure)}">
+                                    1 ${escapeHtml(pkg.unit_name)} [${pkg.conversion_factor}]: ${formatMoney(pkg.selling_price)}
+                                </span>
+                            `).join('')}
+                        </div>
+                    ` : ''}
                 </td>
                 <td class="td text-xs text-slate-700">
                     ${highlightedCat}
@@ -122,7 +155,7 @@ function _renderProductsTbody() {
                 </td>
                 <td class="td-num">
                     <span class="font-bold text-xs ${isLow ? 'text-amber-800' : 'text-slate-800'}">${p.current_stock}</span>
-                    <span class="text-[10px] text-slate-400 block">Min: ${p.min_stock_level || 0}</span>
+                    <span class="text-[10px] text-slate-400 block" title="${escapeHtml(formatSmartStock(p.current_stock, p.unit_measure, packagings))}">Min: ${p.min_stock_level || 0}</span>
                 </td>
                 <td class="td text-center">
                     <span class="badge ${p.is_active ? 'badge-success' : 'badge-neutral'} text-[10px]">
@@ -179,7 +212,7 @@ function _renderProductsView(container) {
                 </div>
             </div>
 
-            <!-- Table - Engineered to fit desktop viewport without clipping -->
+            <!-- Table -->
             <div class="flex-1 overflow-auto">
                 <table class="table w-full">
                     <thead class="sticky top-0 z-10">
@@ -197,7 +230,6 @@ function _renderProductsView(container) {
                     </tbody>
                 </table>
             </div>
-
         </div>
     `;
 
@@ -252,6 +284,31 @@ window.clearProductFilters = function() {
     _renderProductsView(document.getElementById('content-area'));
 };
 
+window.addPackagingRow = function(unitName = '', factor = '', price = '') {
+    const container = document.getElementById('p-packagings-list');
+    if (!container) return;
+    const row = document.createElement('div');
+    row.className = 'pkg-row grid grid-cols-12 gap-2 items-center p-2 rounded bg-slate-50 border border-slate-200 text-xs';
+    row.innerHTML = `
+        <div class="col-span-4">
+            <label class="text-[10px] text-slate-500 block mb-0.5">${t('prod.pkg_name', 'Packaging Unit')} *</label>
+            <input type="text" class="form-input text-xs pkg-name" placeholder="e.g. Strip / Box" value="${escapeHtml(unitName)}" required>
+        </div>
+        <div class="col-span-3">
+            <label class="text-[10px] text-slate-500 block mb-0.5">${t('prod.pkg_factor', 'Base Units')} *</label>
+            <input type="number" class="form-input text-xs font-mono pkg-factor" placeholder="e.g. 10" min="2" value="${factor || ''}" required>
+        </div>
+        <div class="col-span-4">
+            <label class="text-[10px] text-slate-500 block mb-0.5">${t('prod.pkg_price', 'Price (Kyat)')} *</label>
+            <input type="number" class="form-input text-xs font-mono font-bold pkg-price" placeholder="Kyat" min="0" value="${price || ''}" required>
+        </div>
+        <div class="col-span-1 pt-3 text-center">
+            <button type="button" class="text-rose-500 hover:text-rose-700 font-bold p-1 text-base leading-none" onclick="this.closest('.pkg-row').remove()" title="Remove unit">&times;</button>
+        </div>
+    `;
+    container.appendChild(row);
+};
+
 window.openProductModal = function(p = null) {
     const isEdit = p !== null;
     const title = isEdit ? t('prod.modal_edit_title', "Edit Product Details") : t('prod.modal_add_title', "Register New Product");
@@ -260,7 +317,7 @@ window.openProductModal = function(p = null) {
         <form id="product-form" class="space-y-3 text-xs" onsubmit="event.preventDefault()">
             <div>
                 <label class="form-label" for="p-name">${t('prod.field_name', 'Product Name & Strength / Dosage')} *</label>
-                <input type="text" id="p-name" class="form-input text-xs" required placeholder="e.g. Paracetamol 500mg Tablets, Augmentin 625mg" value="${isEdit ? p.name : ''}">
+                <input type="text" id="p-name" class="form-input text-xs" required placeholder="e.g. Paracetamol 500mg Tablets, Augmentin 625mg" value="${isEdit ? escapeHtml(p.name) : ''}">
                 <span class="form-hint">Include dosage, strength, and brand/generic name clearly.</span>
             </div>
             
@@ -269,25 +326,42 @@ window.openProductModal = function(p = null) {
                     <label class="form-label" for="p-category">${t('prod.field_category', 'Category')} *</label>
                     <select id="p-category" class="form-select text-xs" required>
                         <option value="">${t('sales.all_categories', 'Select Category')}</option>
-                        ${allCategories.map(c => `<option value="${c.id}" ${isEdit && p.category_id === c.id ? 'selected' : ''}>${c.name}</option>`).join('')}
+                        ${allCategories.map(c => `<option value="${c.id}" ${isEdit && p.category_id === c.id ? 'selected' : ''}>${escapeHtml(c.name)}</option>`).join('')}
                     </select>
                 </div>
                 <div>
-                    <label class="form-label" for="p-unit">${t('prod.field_unit', 'Unit of Measure')} *</label>
-                    <input type="text" id="p-unit" class="form-input text-xs" required placeholder="e.g. strip, bottle, box, tube" value="${isEdit ? p.unit_measure : ''}">
+                    <label class="form-label" for="p-unit">${t('prod.field_unit', 'Base Unit of Measure')} *</label>
+                    <input type="text" id="p-unit" class="form-input text-xs" required placeholder="e.g. tablet, capsule, bottle, piece" value="${isEdit ? escapeHtml(p.unit_measure) : ''}">
+                    <span class="form-hint">The smallest retail unit (e.g. tablet).</span>
                 </div>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="form-label" for="p-price">${t('prod.field_price', 'Selling Price (Kyat)')} *</label>
+                    <label class="form-label" for="p-price">${t('prod.field_price', 'Base Unit Selling Price (Kyat)')} *</label>
                     <input type="number" id="p-price" class="form-input text-xs font-mono font-bold" required min="0" placeholder="0" value="${isEdit ? p.selling_price : ''}">
-                    <span class="form-hint">Standard cash retail price per unit.</span>
+                    <span class="form-hint">Price per base unit (e.g. 1 tablet).</span>
                 </div>
                 <div>
                     <label class="form-label" for="p-min">${t('prod.field_min_stock', 'Reorder Alert Level')} *</label>
                     <input type="number" id="p-min" class="form-input text-xs font-mono" required min="0" placeholder="5" value="${isEdit ? p.min_stock_level : 5}">
                     <span class="form-hint">Triggers low stock notice when below this.</span>
+                </div>
+            </div>
+
+            <!-- Multi-unit Packaging Configuration Section -->
+            <div class="p-3 bg-slate-50/80 border border-slate-200 rounded-md space-y-2">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-slate-800 block">${t('prod.packagings_title', 'Multi-unit Packaging (Sub-units)')}</span>
+                        <span class="text-[11px] text-slate-500">Optional: define larger packaging units (e.g. Strip = 10, Box = 100).</span>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-secondary text-xs px-2 py-0.5" onclick="addPackagingRow()">
+                        + ${t('prod.add_packaging', 'Add Unit')}
+                    </button>
+                </div>
+                <div id="p-packagings-list" class="space-y-1.5 max-h-40 overflow-y-auto pt-1">
+                    <!-- Dynamic packaging rows -->
                 </div>
             </div>
 
@@ -317,20 +391,46 @@ window.openProductModal = function(p = null) {
         if (isNaN(min) || min < 0) throw "Minimum stock alert level is required.";
         if (!unit) throw "Unit of measure is required.";
 
+        // Collect packagings
+        const pkgRows = document.querySelectorAll('.pkg-row');
+        const packagings = [];
+        for (const row of pkgRows) {
+            const uname = row.querySelector('.pkg-name').value.trim();
+            const ufactor = parseInt(row.querySelector('.pkg-factor').value);
+            const uprice = parseFloat(row.querySelector('.pkg-price').value);
+            if (!uname) throw "All packaging units must have a unit name.";
+            if (uname.toLowerCase() === unit.toLowerCase()) throw `Packaging unit "${uname}" cannot have the same name as base unit.`;
+            if (isNaN(ufactor) || ufactor <= 1) throw `Conversion factor for "${uname}" must be greater than 1 base unit.`;
+            if (isNaN(uprice) || uprice < 0) throw `Valid selling price required for "${uname}".`;
+            packagings.push({
+                unit_name: uname,
+                conversion_factor: ufactor,
+                selling_price: uprice
+            });
+        }
+
+        const packagingsJson = JSON.stringify(packagings);
+
         if (isEdit) {
-            await callBackend('update_product', p.id, name, catId, unit, price, min, p.is_active);
+            await callBackend('update_product', p.id, name, catId, unit, price, min, p.is_active, packagingsJson);
             showToast(`Product "${name}" updated successfully.`);
         } else {
-            await callBackend('create_product', name, catId, unit, price, min, isMed);
+            await callBackend('create_product', name, catId, unit, price, min, isMed, packagingsJson);
             showToast(`Product "${name}" registered successfully.`);
         }
         
         allProducts = await callBackend('list_products');
         _renderProductsView(document.getElementById('content-area'));
     }, {
-        maxWidth: 'max-w-md',
+        maxWidth: 'max-w-lg',
         saveText: isEdit ? t('btn.save', 'Save Changes') : t('btn.add', 'Register Product')
     });
+
+    if (isEdit && p.packagings && p.packagings.length > 0) {
+        setTimeout(() => {
+            p.packagings.forEach(pkg => addPackagingRow(pkg.unit_name, pkg.conversion_factor, pkg.selling_price));
+        }, 50);
+    }
 };
 
 window.editProduct = function(id) {
@@ -351,40 +451,59 @@ window.confirmToggleProduct = function(id, newState) {
             allProducts = await callBackend('list_products');
             _renderProductsView(document.getElementById('content-area'));
         },
-        { confirmText: `${actionLabel}`, danger: !newState }
+        { danger: !newState, confirmText: actionLabel }
     );
 };
 
 window.openCategoryModal = function() {
     const html = `
-        <div class="space-y-3 text-xs">
-            <div>
-                <label class="form-label">${t('prod.field_category', 'Active Product Categories')}</label>
-                <div class="flex flex-wrap gap-1 max-h-36 overflow-y-auto p-2 border rounded border-slate-200 bg-slate-50">
-                    ${allCategories.map(c => `
-                        <span class="inline-flex items-center px-2 py-0.5 bg-white border border-slate-200 text-slate-800 text-[11px] font-medium rounded shadow-xs">
-                            ${c.name}
-                        </span>
-                    `).join('')}
-                </div>
+        <div class="space-y-4 text-xs">
+            <!-- Add category -->
+            <div class="flex items-center gap-2">
+                <input type="text" id="new-cat-name" class="form-input text-xs flex-1" placeholder="e.g. Antibiotics, Baby Care, Beverages" required>
+                <button type="button" class="btn btn-primary text-xs" onclick="addCategorySubmit()">${t('btn.add', 'Add')}</button>
             </div>
             
-            <form onsubmit="event.preventDefault()">
-                <label class="form-label" for="c-name">${t('prod.field_category', 'New Category Name')} *</label>
-                <input type="text" id="c-name" class="form-input text-xs" placeholder="e.g. Dermatological, Oral Care, Supplements" required>
-            </form>
+            <!-- Category list -->
+            <div class="border border-slate-200 rounded-md divide-y divide-slate-100 max-h-56 overflow-y-auto bg-white" id="cat-list">
+                ${allCategories.map(c => `
+                    <div class="p-2 flex items-center justify-between hover:bg-slate-50 transition-colors">
+                        <span class="font-medium text-slate-800">${escapeHtml(c.name)}</span>
+                        <span class="badge ${c.is_active ? 'badge-success' : 'badge-neutral'} text-[10px]">${c.is_active ? t('status.active', 'Active') : t('status.inactive', 'Inactive')}</span>
+                    </div>
+                `).join('')}
+            </div>
         </div>
     `;
 
-    openModal(t('prod.field_category', "Product Categories"), html, async () => {
-        const name = document.getElementById('c-name').value.trim();
-        if (!name) throw "Category name is required.";
-        await callBackend('create_category', name);
-        showToast(`Category "${name}" created successfully.`);
-        allCategories = await callBackend('list_categories');
-        allProducts = await callBackend('list_products');
-        _renderProductsView(document.getElementById('content-area'));
-    }, {
-        saveText: t('btn.add', 'Add Category')
+    openModal(t('prod.field_category', 'Manage Product Categories'), html, null, {
+        maxWidth: 'max-w-md',
+        cancelText: t('btn.done', 'Done')
     });
+};
+
+window.addCategorySubmit = async function() {
+    const input = document.getElementById('new-cat-name');
+    const name = input ? input.value.trim() : '';
+    if (!name) return;
+    
+    try {
+        await callBackend('create_category', name);
+        showToast(`Category "${name}" created.`);
+        allCategories = await callBackend('list_categories');
+        
+        // Update category list inside modal
+        const list = document.getElementById('cat-list');
+        if (list) {
+            list.innerHTML = allCategories.map(c => `
+                <div class="p-2 flex items-center justify-between hover:bg-slate-50 transition-colors">
+                    <span class="font-medium text-slate-800">${escapeHtml(c.name)}</span>
+                    <span class="badge ${c.is_active ? 'badge-success' : 'badge-neutral'} text-[10px]">${c.is_active ? t('status.active', 'Active') : t('status.inactive', 'Inactive')}</span>
+                </div>
+            `).join('');
+        }
+        input.value = '';
+    } catch(e) {
+        showToast(e, "error");
+    }
 };

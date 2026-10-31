@@ -329,13 +329,27 @@ function _renderSalesProducts(query) {
                     <p class="text-[10px] text-slate-500 mt-0.5">${highlightedCategory}</p>
                 </div>
                 
-                <div class="flex items-center justify-between mt-2 pt-1.5 border-t border-slate-100">
-                    <span class="text-xs font-bold font-mono text-teal-800 tabular-nums whitespace-nowrap">
-                        ${formatMoney(p.selling_price)}
-                    </span>
-                    <span class="btn btn-sm btn-subtle text-teal-800 group-hover:bg-teal-800 group-hover:text-white transition-colors py-0.5 px-2 text-[11px]">
-                        + ${t('btn.add', 'Add')}
-                    </span>
+                <div class="mt-2 pt-1.5 border-t border-slate-100">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold font-mono text-teal-800 tabular-nums whitespace-nowrap">
+                            ${formatMoney(p.selling_price)} / ${escapeHtml(p.unit_measure || 'unit')}
+                        </span>
+                        <span class="btn btn-sm btn-subtle text-teal-800 group-hover:bg-teal-800 group-hover:text-white transition-colors py-0.5 px-2 text-[11px]">
+                            + ${t('btn.add', 'Add')}
+                        </span>
+                    </div>
+                    ${(p.packagings && p.packagings.length > 0) ? `
+                        <div class="flex flex-wrap gap-1 mt-1.5 pt-1 border-t border-dashed border-slate-200" onclick="event.stopPropagation()">
+                            <button type="button" class="text-[10px] px-1.5 py-0.5 rounded border border-slate-300 bg-white hover:bg-slate-100 font-semibold text-slate-700" onclick="salesAddToCart(${p.id}, null)">
+                                ${escapeHtml(p.unit_measure)}
+                            </button>
+                            ${p.packagings.map(pkg => `
+                                <button type="button" class="text-[10px] px-1.5 py-0.5 rounded border border-teal-300 bg-teal-50 hover:bg-teal-100 font-bold text-teal-800" onclick="salesAddToCart(${p.id}, ${pkg.id})" title="${pkg.conversion_factor} ${escapeHtml(p.unit_measure)}">
+                                    ${escapeHtml(pkg.unit_name)}: ${formatMoney(pkg.selling_price)}
+                                </button>
+                            `).join('')}
+                        </div>
+                    ` : ''}
                 </div>
             </div>
         `;
@@ -382,19 +396,38 @@ window.salesFilterCategory = function(cat) {
     _renderSalesProducts(document.getElementById('sales-search')?.value || '');
 };
 
-window.salesAddToCart = function(id) {
+window.salesAddToCart = function(id, packagingId = null) {
     const p = salesProducts.find(x => x.id === id);
     if (!p) return;
     
-    const existing = salesCart.find(x => x.product.id === id);
+    const pkg = packagingId ? (p.packagings || []).find(x => x.id === packagingId) : null;
+    const factor = pkg ? pkg.conversion_factor : 1;
+    const unitName = pkg ? pkg.unit_name : (p.unit_measure || 'unit');
+    const unitPrice = pkg ? pkg.selling_price : p.selling_price;
+    const cartKey = `${p.id}_${pkg ? pkg.id : 'base'}`;
+
+    const currentBaseInCart = salesCart
+        .filter(x => x.product.id === id)
+        .reduce((sum, item) => sum + (item.qty * item.factor), 0);
+
+    if (currentBaseInCart + factor > p.current_stock) {
+        showToast(`${t('sales.stock_warning', 'Cannot add more')}: only ${p.current_stock} ${p.unit_measure || 'units'} in stock.`, "warning");
+        return;
+    }
+
+    const existing = salesCart.find(x => x.cartKey === cartKey);
     if (existing) {
-        if (existing.qty < p.current_stock) {
-            existing.qty += 1;
-        } else {
-            showToast(`${t('sales.stock_warning', 'Cannot add more')}: only ${p.current_stock} ${p.unit_measure || 'units'} in stock.`, "warning");
-        }
+        existing.qty += 1;
     } else {
-        salesCart.push({ product: p, qty: 1 });
+        salesCart.push({
+            cartKey: cartKey,
+            product: p,
+            packaging: pkg,
+            factor: factor,
+            unit_name: unitName,
+            unit_price: unitPrice,
+            qty: 1
+        });
     }
     _renderSalesCart();
 };
@@ -405,9 +438,14 @@ window.salesUpdateQty = function(idx, delta) {
     const newQty = item.qty + delta;
     if (newQty <= 0) {
         salesCart.splice(idx, 1);
-    } else if (newQty > item.product.current_stock) {
-        showToast(`Cannot exceed available stock (${item.product.current_stock} ${item.product.unit_measure || 'units'}).`, "warning");
     } else {
+        const otherBase = salesCart
+            .filter((x, i) => i !== idx && x.product.id === item.product.id)
+            .reduce((sum, x) => sum + (x.qty * x.factor), 0);
+        if (otherBase + (newQty * item.factor) > item.product.current_stock) {
+            showToast(`Cannot exceed available stock (${item.product.current_stock} ${item.product.unit_measure}).`, "warning");
+            return;
+        }
         item.qty = newQty;
     }
     _renderSalesCart();
@@ -419,11 +457,17 @@ window.salesSetQty = function(idx, val) {
     let qty = parseInt(val) || 0;
     if (qty <= 0) {
         salesCart.splice(idx, 1);
-    } else if (qty > item.product.current_stock) {
-        showToast(`Cannot exceed available stock (${item.product.current_stock}).`, "warning");
-        item.qty = item.product.current_stock;
     } else {
-        item.qty = qty;
+        const otherBase = salesCart
+            .filter((x, i) => i !== idx && x.product.id === item.product.id)
+            .reduce((sum, x) => sum + (x.qty * x.factor), 0);
+        const maxQty = Math.floor((item.product.current_stock - otherBase) / item.factor);
+        if (qty > maxQty) {
+            showToast(`Cannot exceed available stock. Max: ${maxQty} ${item.unit_name}.`, "warning");
+            item.qty = Math.max(1, maxQty);
+        } else {
+            item.qty = qty;
+        }
     }
     _renderSalesCart();
 };
@@ -445,7 +489,7 @@ function _renderSalesCart() {
         `;
     } else {
         container.innerHTML = salesCart.map((c, i) => {
-            const lineTotal = c.qty * c.product.selling_price;
+            const lineTotal = c.qty * c.unit_price;
             subtotal += lineTotal;
             count += c.qty;
             return `
@@ -453,9 +497,10 @@ function _renderSalesCart() {
                     <div class="flex-1 min-w-0 pr-1">
                         <div class="text-xs font-bold text-slate-900 leading-snug break-words" title="${c.product.name}">
                             ${c.product.name}
+                            ${c.packaging ? `<span class="badge badge-teal text-[10px] ml-1 font-bold">[${escapeHtml(c.unit_name)} x${c.factor}]</span>` : `<span class="text-slate-400 text-[10px] ml-1">(${escapeHtml(c.unit_name)})</span>`}
                         </div>
                         <div class="flex items-center gap-2 mt-0.5">
-                            <span class="text-[11px] font-mono text-slate-600 font-semibold">${formatMoney(c.product.selling_price)}</span>
+                            <span class="text-[11px] font-mono text-slate-600 font-semibold">${formatMoney(c.unit_price)}</span>
                             ${c.product.is_medicine ? '<span class="text-[9px] bg-teal-50 text-teal-800 px-1 rounded border border-teal-200">Auto FEFO</span>' : ''}
                         </div>
                     </div>
@@ -738,7 +783,9 @@ window.salesCheckout = async function() {
     const items = salesCart.map(c => ({
         product_id: c.product.id,
         quantity: c.qty,
-        unit_price: c.product.selling_price
+        unit_price: c.unit_price,
+        packaging_unit: c.packaging ? c.packaging.unit_name : null,
+        packaging_factor: c.factor || 1
     }));
     
     const ref = 'INV-' + Date.now().toString().slice(-6);
@@ -830,10 +877,10 @@ function _showReceiptModal(ref, items, subtotal, discount, netTotal, received, c
                 ${items.map(it => `
                     <div class="py-1.5 flex justify-between items-center text-xs">
                         <div class="pr-2 min-w-0">
-                            <span class="font-bold text-slate-900 block truncate">${it.product.name}</span>
-                            <span class="text-slate-500 text-[11px]">${it.qty} x ${formatMoney(it.product.selling_price)}</span>
+                            <span class="font-bold text-slate-900 block truncate">${it.product.name} ${it.packaging ? `(${it.unit_name})` : ''}</span>
+                            <span class="text-slate-500 text-[11px]">${it.qty} ${it.unit_name} x ${formatMoney(it.unit_price)}</span>
                         </div>
-                        <span class="font-mono font-bold whitespace-nowrap">${formatMoney(it.qty * it.product.selling_price)}</span>
+                        <span class="font-mono font-bold whitespace-nowrap">${formatMoney(it.qty * it.unit_price)}</span>
                     </div>
                 `).join('')}
             </div>

@@ -319,7 +319,13 @@ const I18N = {
         "sales.credit_mode": "Credit",
         "sales.discount_roundoff": "Round-off / Discount",
         "sales.record_credit_sale": "Record to Credit Book (Enter)",
-        "sales.discount_amount": "Discount / Round-off"
+        "sales.discount_amount": "Discount / Round-off",
+        "prod.packagings_title": "Multi-unit Packaging (Sub-units)",
+        "prod.add_packaging": "Add Unit",
+        "prod.pkg_name": "Packaging Unit",
+        "prod.pkg_factor": "Base Units",
+        "prod.pkg_price": "Price (Kyat)",
+        "pur.packaging_unit": "Intake Unit"
     },
 
     my: {
@@ -637,7 +643,13 @@ const I18N = {
         "sales.credit_mode": "အကြွေးမှတ်",
         "sales.discount_roundoff": "အကြွင်းလျှော့ / Discount",
         "sales.record_credit_sale": "အကြွေးစာအုပ်ထဲ မှတ်မည် (Enter)",
-        "sales.discount_amount": "လျှော့ပေးငွေ / အကြွင်းလျှော့"
+        "sales.discount_amount": "လျှော့ပေးငွေ / အကြွင်းလျှော့",
+        "prod.packagings_title": "ယူနစ်အဆင့်ဆင့် သတ်မှတ်ချက်များ",
+        "prod.add_packaging": "ယူနစ်အသစ် ထည့်မည်",
+        "prod.pkg_name": "ယူနစ်အမည်",
+        "prod.pkg_factor": "ပါဝင်သော အခြေခံယူနစ်",
+        "prod.pkg_price": "ရောင်းဈေး (ကျပ်)",
+        "pur.packaging_unit": "အဝယ်ယူနစ်"
     }
 };
 

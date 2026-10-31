@@ -96,10 +96,12 @@ class FrontendBridge(QObject):
             return self._error(e)
 
     @Slot(str, int, str, float, int, bool, result=str)
-    def create_product(self, name, category_id, unit_measure, selling_price, min_stock, is_medicine):
+    @Slot(str, int, str, float, int, bool, str, result=str)
+    def create_product(self, name, category_id, unit_measure, selling_price, min_stock, is_medicine, packagings_json="[]"):
         try:
+            packagings = json.loads(packagings_json) if packagings_json else []
             pid = self.services['product_service'].create_product(
-                name, category_id, unit_measure, selling_price, min_stock, is_medicine
+                name, category_id, unit_measure, selling_price, min_stock, is_medicine, packagings=packagings
             )
             self.dataChanged.emit("products")
             return self._success({"product_id": pid})
@@ -107,13 +109,33 @@ class FrontendBridge(QObject):
             return self._error(e)
 
     @Slot(int, str, int, str, float, int, bool, result=str)
-    def update_product(self, product_id, name, category_id, unit_measure, selling_price, min_stock, is_active):
+    @Slot(int, str, int, str, float, int, bool, str, result=str)
+    def update_product(self, product_id, name, category_id, unit_measure, selling_price, min_stock, is_active, packagings_json="[]"):
         try:
+            packagings = json.loads(packagings_json) if packagings_json else []
             self.services['product_service'].update_product(
-                product_id, name, category_id, unit_measure, selling_price, min_stock, is_active
+                product_id, name, category_id, unit_measure, selling_price, min_stock, is_active, packagings=packagings
             )
             self.dataChanged.emit("products")
             return self._success()
+        except Exception as e:
+            return self._error(e)
+
+    @Slot(int, str, result=str)
+    def set_product_packagings(self, product_id, packagings_json):
+        try:
+            packagings = json.loads(packagings_json) if packagings_json else []
+            self.services['product_service'].set_product_packagings(product_id, packagings)
+            self.dataChanged.emit("products")
+            return self._success()
+        except Exception as e:
+            return self._error(e)
+
+    @Slot(int, result=str)
+    def get_product_packagings(self, product_id):
+        try:
+            pkgs = self.services['product_service'].get_product_packagings(product_id)
+            return self._success(pkgs)
         except Exception as e:
             return self._error(e)
 

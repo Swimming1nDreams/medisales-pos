@@ -176,24 +176,31 @@ window.openPurchaseModal = async function() {
                 <span class="text-xs font-bold uppercase tracking-wider text-slate-700 block">${t('pur.add_line', 'Add Item Line to Invoice')}</span>
                 
                 <div class="grid grid-cols-12 gap-2 items-end">
-                    <div class="col-span-12 sm:col-span-6">
+                    <div class="col-span-12 sm:col-span-5">
                         <label class="form-label" for="pm-item-prod">${t('col.name', 'Product')} *</label>
                         <select id="pm-item-prod" class="form-select text-xs" onchange="pmProductSelected()">
                             <option value="">${t('prod.filter_search', 'Select Catalog Item...')}</option>
                             ${purchProducts.filter(p => p.is_active).map(p => `
                                 <option value="${p.id}" data-med="${p.is_medicine ? '1' : '0'}">
-                                    ${p.name} ${p.is_medicine ? '[Medicine]' : ''} (${p.unit_measure || 'units'})
+                                    ${escapeHtml(p.name)} ${p.is_medicine ? '[Medicine]' : ''} (${escapeHtml(p.unit_measure || 'units')})
                                 </option>
                             `).join('')}
                         </select>
                     </div>
 
-                    <div class="col-span-6 sm:col-span-3">
+                    <div class="col-span-12 sm:col-span-3">
+                        <label class="form-label" for="pm-item-unit">${t('pur.packaging_unit', 'Intake Unit')} *</label>
+                        <select id="pm-item-unit" class="form-select text-xs font-semibold">
+                            <option value="1">Base Unit</option>
+                        </select>
+                    </div>
+
+                    <div class="col-span-6 sm:col-span-2">
                         <label class="form-label" for="pm-item-qty">${t('col.qty', 'Quantity')} *</label>
                         <input type="number" id="pm-item-qty" placeholder="Qty" class="form-input text-xs font-mono" min="1">
                     </div>
 
-                    <div class="col-span-6 sm:col-span-3">
+                    <div class="col-span-6 sm:col-span-2">
                         <label class="form-label" for="pm-item-cost">${t('col.cost', 'Unit Cost (Ks)')} *</label>
                         <input type="number" id="pm-item-cost" placeholder="0" class="form-input text-xs font-mono" min="0">
                     </div>
@@ -267,6 +274,8 @@ window.openPurchaseModal = async function() {
             product_id: c.product.id,
             quantity: c.qty,
             unit_cost: c.cost,
+            packaging_unit: c.packaging_unit || null,
+            packaging_factor: c.packaging_factor || 1,
             batch_number: c.batch || null,
             expiry_date: c.expiry || null
         }));
@@ -290,6 +299,21 @@ window.pmProductSelected = function() {
         if (isMed) medFields.classList.remove('hidden');
         else medFields.classList.add('hidden');
     }
+
+    const unitSel = document.getElementById('pm-item-unit');
+    if (unitSel) {
+        const prodId = parseInt(sel.value || 0);
+        const prod = purchProducts.find(p => p.id === prodId);
+        if (prod) {
+            let opts = `<option value="1" data-unit="${escapeHtml(prod.unit_measure || 'units')}">1 ${escapeHtml(prod.unit_measure || 'unit')} (Base)</option>`;
+            (prod.packagings || []).forEach(pkg => {
+                opts += `<option value="${pkg.conversion_factor}" data-unit="${escapeHtml(pkg.unit_name)}">1 ${escapeHtml(pkg.unit_name)} [${pkg.conversion_factor} ${escapeHtml(prod.unit_measure)}]</option>`;
+            });
+            unitSel.innerHTML = opts;
+        } else {
+            unitSel.innerHTML = `<option value="1">Base Unit</option>`;
+        }
+    }
 };
 
 window.pmAddItem = function(e) {
@@ -312,6 +336,11 @@ window.pmAddItem = function(e) {
     }
 
     const prod = purchProducts.find(p => p.id == pid);
+    const unitSel = document.getElementById('pm-item-unit');
+    const factor = parseInt(unitSel ? unitSel.value : 1) || 1;
+    const selectedOpt = unitSel ? unitSel.options[unitSel.selectedIndex] : null;
+    const unitName = selectedOpt ? (selectedOpt.getAttribute('data-unit') || prod.unit_measure) : prod.unit_measure;
+
     let batch = null;
     let expiry = null;
     
@@ -328,7 +357,17 @@ window.pmAddItem = function(e) {
         }
     }
 
-    purchCart.push({ product: prod, qty, cost, batch, expiry });
+    purchCart.push({
+        product: prod,
+        qty: qty,
+        cost: cost,
+        factor: factor,
+        unitName: unitName,
+        packaging_unit: factor > 1 ? unitName : null,
+        packaging_factor: factor,
+        batch: batch,
+        expiry: expiry
+    });
     
     // reset item inputs
     document.getElementById('pm-item-prod').value = '';
@@ -337,6 +376,7 @@ window.pmAddItem = function(e) {
     document.getElementById('pm-item-batch').value = '';
     document.getElementById('pm-item-expiry').value = '';
     document.getElementById('pm-medicine-fields').classList.add('hidden');
+    if (unitSel) unitSel.innerHTML = '<option value="1">Base Unit</option>';
     
     pmRenderCart();
 };
@@ -361,8 +401,11 @@ function pmRenderCart() {
         total += lineTotal;
         return `
             <tr class="hover:bg-slate-50">
-                <td class="px-2.5 py-1.5 font-bold text-slate-900">${c.product.name}</td>
-                <td class="px-2.5 py-1.5 text-right font-mono font-bold">${c.qty}</td>
+                <td class="px-2.5 py-1.5 font-bold text-slate-900">
+                    ${escapeHtml(c.product.name)}
+                    ${c.factor > 1 ? `<span class="badge badge-teal text-[10px] ml-1 font-bold">[${escapeHtml(c.unitName)} x${c.factor}]</span>` : `<span class="text-slate-400 text-[10px] ml-1">(${escapeHtml(c.unitName)})</span>`}
+                </td>
+                <td class="px-2.5 py-1.5 text-right font-mono font-bold">${c.qty} ${escapeHtml(c.unitName)}</td>
                 <td class="px-2.5 py-1.5 text-right font-mono">${formatMoney(c.cost)}</td>
                 <td class="px-2.5 py-1.5 font-mono text-[10px]">
                     ${c.batch ? `<span class="font-bold text-teal-800">${c.batch}</span> <span class="text-slate-400">(${c.expiry})</span>` : '<span class="text-slate-400">N/A</span>'}

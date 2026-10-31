@@ -98,31 +98,38 @@ class SalesService:
                 price = self._ensure_integer(item['unit_price'])
                 line_total = req_qty * price
 
+                pkg_unit = (item.get('packaging_unit') or '').strip() or None
+                pkg_factor = self._ensure_integer(item.get('packaging_factor', 1))
+                if pkg_factor < 1:
+                    pkg_factor = 1
+                base_qty = req_qty * pkg_factor
+
                 prod = conn.execute("SELECT is_medicine, is_active, current_stock, inventory_value FROM products WHERE id = ?", (prod_id,)).fetchone()
                 if not prod:
                     raise ValueError(f"Product {prod_id} not found.")
                 if not prod['is_active']:
                     raise ValueError(f"Product {prod_id} is inactive and cannot be sold.")
-                if prod['current_stock'] < req_qty:
-                    raise ValueError(f"Insufficient stock for product {prod_id}.")
+                if prod['current_stock'] < base_qty:
+                    unit_desc = f"{pkg_unit} ({base_qty} base units)" if pkg_unit else f"units"
+                    raise ValueError(f"Insufficient stock for product {prod_id}. Requested {req_qty} {unit_desc}, but only {prod['current_stock']} available.")
 
                 item_total_cost = 0
 
                 if prod['is_medicine']:
                     batches = self.inventory_service.get_sellable_medicine_batches(prod_id)
                     total_available = sum(b['current_qty'] for b in batches)
-                    if total_available < req_qty:
+                    if total_available < base_qty:
                         raise ValueError(f"Insufficient eligible batch stock for medicine product {prod_id}.")
 
                     # Insert sale item first to get ID for sale_item_batches
-                    # We will update total_cost shortly.
+                    # quantity stores base_qty for exact inventory integrity and void restoration
                     si_cursor = conn.execute(
-                        "INSERT INTO sale_items (sale_id, product_id, quantity, unit_price, total_cost, line_total) VALUES (?, ?, ?, ?, 0, ?)",
-                        (sale_id, prod_id, req_qty, price, line_total)
+                        "INSERT INTO sale_items (sale_id, product_id, quantity, unit_price, total_cost, line_total, packaging_unit, packaging_factor) VALUES (?, ?, ?, ?, 0, ?, ?, ?)",
+                        (sale_id, prod_id, base_qty, price, line_total, pkg_unit, pkg_factor)
                     )
                     sale_item_id = si_cursor.lastrowid
 
-                    rem_qty = req_qty
+                    rem_qty = base_qty
                     for batch in batches:
                         if rem_qty <= 0:
                             break
@@ -150,11 +157,11 @@ class SalesService:
                     conn.execute("UPDATE sale_items SET total_cost = ? WHERE id = ?", (item_total_cost, sale_item_id))
 
                 else:
-                    item_total_cost = self.inventory_service.calculate_wac_value_change(prod['current_stock'], prod['inventory_value'], req_qty)
+                    item_total_cost = self.inventory_service.calculate_wac_value_change(prod['current_stock'], prod['inventory_value'], base_qty)
                     
                     conn.execute(
-                        "INSERT INTO sale_items (sale_id, product_id, quantity, unit_price, total_cost, line_total) VALUES (?, ?, ?, ?, ?, ?)",
-                        (sale_id, prod_id, req_qty, price, item_total_cost, line_total)
+                        "INSERT INTO sale_items (sale_id, product_id, quantity, unit_price, total_cost, line_total, packaging_unit, packaging_factor) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                        (sale_id, prod_id, base_qty, price, item_total_cost, line_total, pkg_unit, pkg_factor)
                     )
 
                 # Update product stock & value
@@ -162,14 +169,14 @@ class SalesService:
                     UPDATE products 
                     SET current_stock = current_stock - ?, inventory_value = inventory_value - ?
                     WHERE id = ?
-                ''', (req_qty, item_total_cost, prod_id))
+                ''', (base_qty, item_total_cost, prod_id))
 
                 # Log inventory movement
                 conn.execute('''
                     INSERT INTO inventory_movements 
                     (product_id, quantity_change, value_change, movement_type, reference_type, reference_id, date_time)
                     VALUES (?, ?, ?, 'Out', 'Sale', ?, ?)
-                ''', (prod_id, req_qty, item_total_cost, sale_id, now))
+                ''', (prod_id, base_qty, item_total_cost, sale_id, now))
 
             return sale_id
 

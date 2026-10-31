@@ -63,14 +63,22 @@ class PurchaseService:
                     
                 line_total = qty * cost
 
+                pkg_unit = (item.get('packaging_unit') or '').strip() or None
+                pkg_factor = self._ensure_integer(item.get('packaging_factor', 1))
+                if pkg_factor < 1:
+                    pkg_factor = 1
+
+                base_qty = qty * pkg_factor
+                base_cost = line_total // base_qty if base_qty > 0 else cost
+
                 prod = conn.execute("SELECT is_medicine FROM products WHERE id = ?", (prod_id,)).fetchone()
                 if not prod:
                     raise ValueError(f"Product {prod_id} not found.")
 
-                # Insert purchase item
+                # Insert purchase item (stores base_qty for inventory balance, plus packaging metadata)
                 pi_cursor = conn.execute(
-                    "INSERT INTO purchase_items (purchase_id, product_id, quantity, unit_cost, line_total) VALUES (?, ?, ?, ?, ?)",
-                    (purchase_id, prod_id, qty, cost, line_total)
+                    "INSERT INTO purchase_items (purchase_id, product_id, quantity, unit_cost, line_total, packaging_unit, packaging_factor) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    (purchase_id, prod_id, base_qty, base_cost, line_total, pkg_unit, pkg_factor)
                 )
                 pi_id = pi_cursor.lastrowid
 
@@ -79,11 +87,11 @@ class PurchaseService:
                     UPDATE products 
                     SET current_stock = current_stock + ?, inventory_value = inventory_value + ?
                     WHERE id = ?
-                ''', (qty, line_total, prod_id))
+                ''', (base_qty, line_total, prod_id))
 
                 if prod_id not in prod_movements:
                     prod_movements[prod_id] = {'qty': 0, 'value': 0}
-                prod_movements[prod_id]['qty'] += qty
+                prod_movements[prod_id]['qty'] += base_qty
                 prod_movements[prod_id]['value'] += line_total
 
                 if prod['is_medicine']:
@@ -97,14 +105,14 @@ class PurchaseService:
                         INSERT INTO medicine_batches 
                         (product_id, purchase_item_id, batch_number, expiry_date, initial_qty, current_qty, unit_cost)
                         VALUES (?, ?, ?, ?, ?, ?, ?)
-                    ''', (prod_id, pi_id, batch_no, expiry, qty, qty, cost))
+                    ''', (prod_id, pi_id, batch_no, expiry, base_qty, base_qty, base_cost))
                     batch_id = batch_cursor.lastrowid
 
                     conn.execute('''
                         INSERT INTO medicine_batch_movements 
                         (batch_id, quantity_change, movement_type, reference_type, reference_id, date_time)
                         VALUES (?, ?, 'In', 'Purchase', ?, ?)
-                    ''', (batch_id, qty, purchase_id, now))
+                    ''', (batch_id, base_qty, purchase_id, now))
 
             # Record inventory movement once per distinct product for this purchase
             for p_id, mov in prod_movements.items():
