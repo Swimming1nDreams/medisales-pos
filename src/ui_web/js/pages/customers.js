@@ -100,15 +100,15 @@ function _renderCustomersTbody() {
                 <td class="td text-right">
                     <div class="flex items-center justify-end gap-1">
                         ${bal > 0 ? `
-                            <button class="btn btn-sm btn-success py-0.5 px-2.5 text-xs font-bold shadow-xs" onclick="openCustomerPaymentModal(${c.id}, '${escapeHtml(c.name)}', ${bal})">
+                            <button class="btn-table btn-table-success" onclick="openCustomerPaymentModal(${c.id}, '${escapeHtml(c.name)}', ${bal})">
                                 ${t('cust.btn_repay', 'Repay')}
                             </button>
                         ` : ''}
-                        <button class="btn btn-sm btn-secondary py-0.5 px-2 text-xs" onclick="openCustomerStatementModal(${c.id})" title="View Ledger Statement">
+                        <button class="btn-table btn-table-secondary" onclick="openCustomerStatementModal(${c.id})" title="View Ledger Statement">
                             <svg class="w-3 h-3 text-slate-500 inline mr-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                             ${t('cust.btn_statement', 'History')}
                         </button>
-                        <button class="btn btn-sm btn-secondary py-0.5 px-1.5 text-xs" onclick="editCustomer(${c.id})">
+                        <button class="btn-table btn-table-secondary" onclick="editCustomer(${c.id})">
                             ${t('btn.edit', 'Edit')}
                         </button>
                     </div>
@@ -154,7 +154,7 @@ async function renderCustomers(container) {
         <div class="card flex flex-col h-full">
             
             <!-- Toolbar -->
-            <div class="p-3 border-b border-slate-200 bg-white flex flex-wrap items-center justify-between gap-3">
+            <div class="p-3 border-b border-slate-200/80 bg-gradient-to-r from-slate-100/90 via-slate-50 to-slate-100/70 flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-3 flex-1 min-w-[280px]">
                     <div class="relative w-72">
                         <input type="text" 
@@ -206,7 +206,7 @@ async function renderCustomers(container) {
             </div>
 
             <!-- Footer summary -->
-            <div class="p-2.5 px-4 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 flex items-center justify-between">
+            <div class="card-footer text-xs flex items-center justify-between">
                 <div>
                     ${t('cust.ledger_info', 'Neighborhood Customer Ledger tracks credit sales and debt settlements. When recording POS sales, select Credit Sale to add to customer account.')}
                 </div>

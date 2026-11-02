@@ -212,8 +212,8 @@ function _renderProductsTbody() {
                     </span>
                 </td>
                 <td class="td text-right whitespace-nowrap space-x-1">
-                    <button class="btn btn-sm btn-secondary text-indigo-700 border-indigo-200 hover:bg-indigo-50 py-0.5 text-xs font-semibold" onclick="editProduct(${p.id})">${t('btn.edit', 'Edit')}</button>
-                    <button class="btn btn-sm ${p.is_active ? 'btn-danger' : 'btn-success'} py-0.5 text-xs font-semibold" onclick="confirmToggleProduct(${p.id}, ${!p.is_active})">
+                    <button class="btn-table btn-table-secondary" onclick="editProduct(${p.id})">${t('btn.edit', 'Edit')}</button>
+                    <button class="btn-table ${p.is_active ? 'btn-table-danger' : 'btn-table-success'}" onclick="confirmToggleProduct(${p.id}, ${!p.is_active})">
                         ${p.is_active ? t('btn.delete', 'Disable') : t('btn.add', 'Enable')}
                     </button>
                 </td>
@@ -231,7 +231,7 @@ function _renderProductsView(container) {
         <div class="card flex flex-col h-full">
             
             <!-- Filter & Stats Toolbar -->
-            <div class="p-3 border-b border-slate-200 bg-white flex flex-wrap items-center justify-between gap-2.5">
+            <div class="p-3 border-b border-slate-200/80 bg-gradient-to-r from-slate-100/90 via-slate-50 to-slate-100/70 flex flex-wrap items-center justify-between gap-2.5">
                 <div class="flex flex-wrap items-center gap-2 flex-1 min-w-[280px]">
                     <div class="relative flex-1 min-w-[180px] max-w-sm">
                         <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">

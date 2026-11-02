@@ -35,15 +35,15 @@ async function renderDashboard(container) {
     const headerActions = document.getElementById('header-actions');
     if (headerActions) {
         headerActions.innerHTML = `
-            <button class="btn btn-primary shadow-sm hover:shadow transition-all" onclick="navigate('sales')">
+            <button class="btn btn-primary" onclick="navigate('sales')">
                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                 <span class="font-bold">${t('dash.quick_pos', 'POS Cashier (F1)')}</span>
             </button>
-            <button class="btn btn-secondary text-slate-700 hover:bg-slate-100" onclick="navigate('purchases')">
+            <button class="btn btn-secondary" onclick="navigate('purchases')">
                 <svg class="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 <span>${t('pur.add_button', 'Purchase')}</span>
             </button>
-            <button class="btn btn-secondary text-slate-700 hover:bg-slate-100" onclick="navigate('expenses')">
+            <button class="btn btn-secondary" onclick="navigate('expenses')">
                 <svg class="w-4 h-4 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
                 <span>${t('exp.add_button', 'Expense')}</span>
             </button>
@@ -59,7 +59,7 @@ async function renderDashboard(container) {
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
                 
                 <!-- 1. Today's Revenue -->
-                <div class="card p-4 bg-gradient-to-br from-emerald-50/40 via-white to-white border-slate-200/90 shadow-xs hover:border-emerald-300 transition-colors">
+                <div class="card p-4 bg-gradient-to-br from-emerald-50/70 via-white to-emerald-50/20 border-emerald-200/90 shadow-xs hover:border-emerald-300 transition-colors">
                     <div class="flex items-center justify-between text-xs">
                         <span class="font-semibold text-slate-500 uppercase tracking-wider text-[11px]">${t('dash.revenue_today', "Today's Sales")}</span>
                         <span class="badge badge-success text-[10px] font-bold px-2 py-0.5">${salesCount} ${t('sales.cart_items', 'orders')}</span>
@@ -74,7 +74,7 @@ async function renderDashboard(container) {
                 </div>
 
                 <!-- 2. Today's Gross Profit -->
-                <div class="card p-4 bg-gradient-to-br from-teal-50/40 via-white to-white border-slate-200/90 shadow-xs hover:border-teal-300 transition-colors">
+                <div class="card p-4 bg-gradient-to-br from-teal-50/70 via-white to-teal-50/20 border-teal-200/90 shadow-xs hover:border-teal-300 transition-colors">
                     <div class="flex items-center justify-between text-xs">
                         <span class="font-semibold text-slate-500 uppercase tracking-wider text-[11px]">${t('dash.gross_profit_today', 'Gross Profit')}</span>
                         <span class="badge badge-teal text-[10px] font-bold px-2 py-0.5">${marginPct}%</span>
@@ -89,7 +89,7 @@ async function renderDashboard(container) {
                 </div>
 
                 <!-- 3. Operating Expenses -->
-                <div class="card p-4 bg-gradient-to-br from-amber-50/40 via-white to-white border-slate-200/90 shadow-xs hover:border-amber-300 transition-colors">
+                <div class="card p-4 bg-gradient-to-br from-amber-50/70 via-white to-amber-50/20 border-amber-200/90 shadow-xs hover:border-amber-300 transition-colors">
                     <div class="flex items-center justify-between text-xs">
                         <span class="font-semibold text-slate-500 uppercase tracking-wider text-[11px]">${t('nav.expenses', 'Today Expenses')}</span>
                         <span class="badge ${expenses > 0 ? 'badge-warning font-bold' : 'badge-neutral'} text-[10px] px-2 py-0.5">${t('rep.date_today', 'Today')}</span>
@@ -104,7 +104,7 @@ async function renderDashboard(container) {
                 </div>
 
                 <!-- 4. Total Stock Valuation -->
-                <div class="card p-4 bg-gradient-to-br from-indigo-50/40 via-white to-white border-slate-200/90 shadow-xs hover:border-indigo-300 transition-colors">
+                <div class="card p-4 bg-gradient-to-br from-indigo-50/70 via-white to-indigo-50/20 border-indigo-200/90 shadow-xs hover:border-indigo-300 transition-colors">
                     <div class="flex items-center justify-between text-xs">
                         <span class="font-semibold text-slate-500 uppercase tracking-wider text-[11px]">${t('dash.inventory_valuation', 'Inventory Value')}</span>
                         <span class="badge badge-info text-[10px] font-bold px-2 py-0.5">${activeProducts} ${t('status.active', 'SKUs')}</span>
@@ -136,7 +136,7 @@ async function renderDashboard(container) {
                             </span>
                         </div>
                     </div>
-                    <button class="btn btn-sm btn-secondary text-amber-900 border-amber-300 bg-white hover:bg-amber-100 self-start sm:self-auto text-xs font-medium" onclick="navigate('inventory')">
+                    <button class="btn-table btn-table-warning self-start sm:self-auto" onclick="navigate('inventory')">
                         ${t('dash.view_inventory', 'Check Inventory')} &rarr;
                     </button>
                 </div>
@@ -155,12 +155,12 @@ async function renderDashboard(container) {
                 
                 <!-- Left Column (7 cols): Today's Recent Sales Register -->
                 <div class="lg:col-span-7 card flex flex-col shadow-xs overflow-hidden">
-                    <div class="px-4 py-3 border-b border-slate-100 bg-white flex items-center justify-between">
+                    <div class="px-4 py-2.5 border-b border-slate-200/80 bg-gradient-to-r from-slate-100/90 via-slate-50 to-slate-100/70 flex items-center justify-between">
                         <div class="flex items-center gap-2">
                             <h3 class="font-bold text-xs uppercase tracking-wider text-slate-800">${t('dash.recent_sales', 'Recent Sales')}</h3>
                             <span class="badge badge-neutral text-[10px] font-mono">${recentSales.length}</span>
                         </div>
-                        <button class="btn btn-sm btn-secondary text-xs text-slate-600 hover:text-slate-900" onclick="navigate('sales')">
+                        <button class="btn-table btn-table-secondary text-xs" onclick="navigate('sales')">
                             ${t('dash.view_all_sales', 'View All')} &rarr;
                         </button>
                     </div>
@@ -210,7 +210,7 @@ async function renderDashboard(container) {
                 <div class="lg:col-span-5 space-y-3.5">
                     
                     <!-- Fast POS Cashier Hero Card -->
-                    <div class="card p-4 bg-gradient-to-br from-teal-900 to-slate-900 text-white shadow-md border-0">
+                    <div class="card p-3.5 bg-gradient-to-br from-slate-900 via-teal-950 to-slate-900 text-white shadow-md border border-teal-800/60">
                         <div class="flex items-start justify-between">
                             <div>
                                 <span class="badge bg-teal-500/20 text-teal-300 border border-teal-500/30 text-[10px] font-mono font-bold">POS Cashier</span>
@@ -219,14 +219,17 @@ async function renderDashboard(container) {
                             </div>
                             <span class="px-2 py-1 bg-white/10 rounded-md font-mono text-xs font-bold text-teal-300 border border-white/10">F1</span>
                         </div>
-                        <button class="w-full mt-4 py-2.5 px-4 bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-slate-950 font-bold rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 text-xs" onclick="navigate('sales')">
+                        <button class="w-full mt-4 py-2 px-3 bg-teal-500 hover:bg-teal-400 active:bg-teal-600 text-slate-950 font-bold rounded-lg transition-all shadow-xs flex items-center justify-center gap-2 text-xs h-8" onclick="navigate('sales')">
                             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                             <span>${t('dash.launch_pos_title', 'Start New Sale (F1)')}</span>
                         </button>
                     </div>
 
                     <!-- 3 Essential Shortcuts -->
-                    <div class="card p-3 divide-y divide-slate-100">
+                    <div class="card divide-y divide-slate-100 overflow-hidden">
+                        <div class="px-3.5 py-2 border-b border-slate-200/80 bg-gradient-to-r from-slate-100/90 via-slate-50 to-slate-100/70 text-xs font-bold text-slate-700 uppercase tracking-wider">
+                            <span>${t('dash.quick_launchpad', 'Quick Actions & Ledgers')}</span>
+                        </div>
                         
                         <!-- Add Product -->
                         <div class="py-2.5 flex items-center justify-between hover:bg-slate-50/80 px-2 rounded-lg cursor-pointer transition-colors" onclick="navigate('products')">

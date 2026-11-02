@@ -68,15 +68,15 @@ function _renderSuppliersTbody() {
                 <td class="td text-right">
                     <div class="flex items-center justify-end gap-1.5">
                         ${bal > 0 ? `
-                            <button class="btn btn-sm btn-primary py-1 px-2 text-xs" onclick="openPaymentModal(${s.id}, '${escapeHtml(s.name)}', ${bal})">
+                            <button class="btn-table btn-table-primary" onclick="openPaymentModal(${s.id}, '${escapeHtml(s.name)}', ${bal})">
                                 ${t('sup.btn_record_payment', 'Settle')}
                             </button>
                         ` : `
-                            <span class="text-[11px] text-emerald-700 font-medium px-2 py-0.5 bg-emerald-50 rounded border border-emerald-200">
+                            <span class="badge badge-success text-[10px]">
                                 ${t('sup.status_cleared', 'Settled')}
                             </span>
                         `}
-                        <button class="btn btn-sm btn-secondary py-1 px-2 text-xs" onclick="editSupplier(${s.id})">
+                        <button class="btn-table btn-table-secondary" onclick="editSupplier(${s.id})">
                             ${t('btn.edit', 'Edit')}
                         </button>
                     </div>
@@ -124,7 +124,7 @@ async function renderSuppliers(container) {
         <div class="card flex flex-col h-full">
             
             <!-- Toolbar -->
-            <div class="p-3 border-b border-slate-200 bg-white flex flex-wrap items-center justify-between gap-3">
+            <div class="p-3 border-b border-slate-200/80 bg-gradient-to-r from-slate-100/90 via-slate-50 to-slate-100/70 flex flex-wrap items-center justify-between gap-3">
                 <div class="flex items-center gap-3 flex-1 min-w-[280px]">
                     <div class="relative w-72">
                         <input type="text" 
@@ -171,7 +171,7 @@ async function renderSuppliers(container) {
             </div>
 
             <!-- Footer summary -->
-            <div class="p-2.5 px-4 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 flex items-center justify-between">
+            <div class="card-footer text-xs flex items-center justify-between">
                 <div>
                     ${t('rep.disclosure_payments', 'Suppliers supply wholesale pharmaceuticals and store inventory. Payments are applied in FIFO order to unpaid purchase orders.')}
                 </div>

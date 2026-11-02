@@ -55,14 +55,14 @@ async function renderExpenses(container) {
         <div class="card flex flex-col h-full">
             
             <!-- Toolbar -->
-            <div class="p-3 border-b border-slate-200 bg-white flex flex-wrap items-center justify-between gap-3">
+            <div class="p-3 border-b border-slate-200/80 bg-gradient-to-r from-slate-100/90 via-slate-50 to-slate-100/70 flex flex-wrap items-center justify-between gap-3">
                 <div class="flex flex-wrap items-center gap-3 flex-1 min-w-[280px]">
                     <div class="flex items-center gap-2 text-xs">
                         <span class="font-medium text-slate-600">${t('sales.filter_start', 'Period:')}</span>
                         <input type="date" id="exp-start" class="form-input text-xs w-32 py-1 px-2" value="${expenseStart}">
                         <span class="text-slate-400">to</span>
                         <input type="date" id="exp-end" class="form-input text-xs w-32 py-1 px-2" value="${expenseEnd}">
-                        <button class="btn btn-sm btn-secondary text-xs py-1" onclick="updateExpenseDates()">${t('btn.filter', 'Apply')}</button>
+                        <button class="btn btn-sm btn-secondary text-xs" onclick="updateExpenseDates()">${t('btn.filter', 'Apply')}</button>
                     </div>
 
                     ${categories.length > 0 ? `
@@ -125,7 +125,7 @@ async function renderExpenses(container) {
                                     </td>
                                     <td class="td text-right">
                                         ${!isVoid ? `
-                                            <button class="btn btn-sm text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 py-1 px-2.5 text-xs font-semibold whitespace-nowrap" onclick="voidExpense(${e.id}, '${escapeHtml(e.category)}', ${e.amount})">
+                                            <button class="btn-table btn-table-danger" onclick="voidExpense(${e.id}, '${escapeHtml(e.category)}', ${e.amount})">
                                                 ${t('exp.btn_void', 'Void')}
                                             </button>
                                         ` : `<span class="text-[11px] text-slate-400 italic">${t('status.voided', 'Voided')}</span>`}
@@ -138,7 +138,7 @@ async function renderExpenses(container) {
             </div>
 
             <!-- Footer summary -->
-            <div class="p-2.5 px-4 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 flex items-center justify-between">
+            <div class="card-footer text-xs flex items-center justify-between">
                 <div>
                     ${t('exp.notice', 'Operating expenses are deducted directly from Gross Profit to calculate Net Operating Profit in Financial Reports.')}
                 </div>

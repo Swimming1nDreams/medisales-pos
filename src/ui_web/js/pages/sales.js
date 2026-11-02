@@ -972,7 +972,7 @@ async function _renderHistoryView(container) {
         <div class="card flex flex-col h-full">
             
             <!-- Toolbar -->
-            <div class="p-3 border-b border-slate-200 bg-white flex flex-wrap items-center justify-between gap-2.5">
+            <div class="p-3 border-b border-slate-200/80 bg-gradient-to-r from-slate-100/90 via-slate-50 to-slate-100/70 flex flex-wrap items-center justify-between gap-2.5">
                 <div class="flex items-center gap-2 text-xs flex-wrap">
                     <span class="font-semibold text-slate-700">${t('sales.filter_start', 'Filter Period:')}</span>
                     <input type="date" id="sales-start-date" class="form-input text-xs w-36 py-1" value="${salesStart}" onchange="updateSalesDates()">
@@ -1040,7 +1040,7 @@ async function _renderHistoryView(container) {
                                     </td>
                                     <td class="td text-right">
                                         ${!isVoid ? `
-                                            <button class="btn btn-sm btn-danger py-0.5 text-xs" onclick="openVoidSaleModal(${s.id}, '${s.reference}')">
+                                            <button class="btn-table btn-table-danger" onclick="openVoidSaleModal(${s.id}, '${s.reference}')">
                                                 ${t('btn.void', 'Void & Return')}
                                             </button>
                                         ` : `<span class="text-xs text-slate-400 italic">${t('status.voided', 'Voided')}</span>`}

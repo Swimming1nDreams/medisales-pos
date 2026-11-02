@@ -46,7 +46,7 @@ async function renderPurchases(container) {
         <div class="card flex flex-col h-full">
             
             <!-- Toolbar -->
-            <div class="p-3 border-b border-slate-200 bg-white flex flex-wrap items-center justify-between gap-2.5">
+            <div class="p-3 border-b border-slate-200/80 bg-gradient-to-r from-slate-100/90 via-slate-50 to-slate-100/70 flex flex-wrap items-center justify-between gap-2.5">
                 <div class="flex items-center gap-2 text-xs">
                     <span class="font-semibold text-slate-700">${t('sales.filter_start', 'Invoice Period:')}</span>
                     <input type="date" id="purch-start" class="form-input text-xs w-36 py-1" value="${purchaseStart}" onchange="updatePurchaseDates()">

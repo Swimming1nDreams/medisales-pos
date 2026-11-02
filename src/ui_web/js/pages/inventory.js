@@ -172,7 +172,7 @@ function _renderStockTbody() {
                       `<span class="badge badge-success text-[10px] font-bold">${t('status.active', 'In Stock')}</span>`)}
                 </td>
                 <td class="td text-right whitespace-nowrap">
-                    <button class="btn btn-sm btn-secondary text-teal-800 border-teal-200 bg-teal-50/50 hover:bg-teal-100/80 py-0.5 text-xs font-semibold" onclick="navigate('purchases')">
+                    <button class="btn-table btn-table-primary" onclick="navigate('purchases')">
                         ${t('pur.add_button', 'Receive Stock')}
                     </button>
                 </td>
@@ -215,7 +215,7 @@ function _renderStockTable(container) {
             <div class="card flex flex-col flex-1 min-h-0">
             
             <!-- Toolbar -->
-            <div class="p-3 border-b border-slate-200 bg-white flex flex-wrap items-center justify-between gap-2.5">
+            <div class="p-3 border-b border-slate-200/80 bg-gradient-to-r from-slate-100/90 via-slate-50 to-slate-100/70 flex flex-wrap items-center justify-between gap-2.5">
                 <div class="flex items-center gap-3 flex-1 min-w-[280px]">
                     <div class="relative flex-1 max-w-sm">
                         <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
@@ -348,7 +348,7 @@ function _renderBatchTable(container) {
             <div class="card flex flex-col flex-1 min-h-0">
             
             <!-- Toolbar -->
-            <div class="p-3 border-b border-slate-200 bg-white flex flex-wrap items-center justify-between gap-2.5">
+            <div class="p-3 border-b border-slate-200/80 bg-gradient-to-r from-slate-100/90 via-slate-50 to-slate-100/70 flex flex-wrap items-center justify-between gap-2.5">
                 <div class="relative flex-1 max-w-sm">
                     <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-slate-400">
                         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>

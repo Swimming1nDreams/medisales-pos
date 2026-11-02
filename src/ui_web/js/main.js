@@ -423,7 +423,7 @@ function openModal(title, htmlContent, onSave, options = {}) {
         </div>
         <div class="px-5 py-3 border-t border-slate-100 flex justify-end gap-2 bg-slate-50/70 flex-shrink-0">
             <button onclick="closeModal()" class="btn btn-secondary">${cancelLabel}</button>
-            <button id="modal-save-btn" class="${options.saveBtnClass || 'btn-primary'}">${saveLabel}</button>
+            <button id="modal-save-btn" class="btn ${options.saveBtnClass || 'btn-primary'}">${saveLabel}</button>
         </div>
     `;
     
