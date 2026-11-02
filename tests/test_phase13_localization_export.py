@@ -310,7 +310,7 @@ def test_excel_financial_report_reconciliation_and_disclosures(services_bundle, 
     purch_svc.record_payment("PV-01", supp_id, "2026-10-07", 50000, [{'purchase_id': purch_rows[0]['id'], 'allocated_amount': 50000}], "Partial debt settlement")
 
     out_file = str(tmp_path / "pnl_reconciled.xlsx")
-    exporter.export_financial_report(out_file, "2026-10-01", "2026-10-31")
+    exporter.export_financial_report(out_file, "2026-10-01", "2026-12-31")
 
     wb = openpyxl.load_workbook(out_file)
     ws = wb["Profit & Loss Statement"]

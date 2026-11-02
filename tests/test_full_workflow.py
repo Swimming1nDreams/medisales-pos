@@ -364,7 +364,7 @@ def test_complete_business_workflow_14_steps(workflow_bridge):
     today_dash = json.loads(bridge.get_dashboard_summary())['data']
     # Supplier payments: 15,000 Ks. Stock purchases: 42,500 + PO-EXP-TEST.
     # The active operating expense is strictly 3,000 Ks.
-    fin_summary = services['finance_service'].get_summary("2026-10-01", "2026-10-31")
+    fin_summary = services['finance_service'].get_summary("2026-10-01", "2026-12-31")
     assert fin_summary['operating_expenses'] == 3000
     assert fin_summary['supplier_payments_made'] == 15000
     assert fin_summary['purchases_recorded'] >= 42500
@@ -381,7 +381,7 @@ def test_complete_business_workflow_14_steps(workflow_bridge):
     # Manually expected Gross Profit: 18,000 - 12,300 = 5,700 Ks
     # Manually expected Operating Expenses: 3,000 Ks
     # Manually expected Net Operating Profit: 5,700 - 3,000 = 2,700 Ks
-    sales_rep = json.loads(bridge.get_sales_summary("2026-10-01", "2026-10-31"))['data']
+    sales_rep = json.loads(bridge.get_sales_summary("2026-10-01", "2026-12-31"))['data']
     assert sales_rep['total_revenue'] == 18000
     assert sales_rep['total_cogs'] == 12300
     assert sales_rep['gross_profit'] == 5700

@@ -1,6 +1,6 @@
 from datetime import datetime
 import sqlite3
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 class SalesService:
     def __init__(self, db_manager, inventory_service):
@@ -19,7 +19,8 @@ class SalesService:
         amount_received: int,
         discount_amount: int = 0,
         payment_type: str = 'cash',
-        customer_id: Any = None
+        customer_id: Any = None,
+        date_time: Optional[str] = None
     ) -> int:
         reference = reference.strip()
         if not reference:
@@ -77,7 +78,7 @@ class SalesService:
                     change_given = 0
                     credit_amount = total_amount - amount_received
 
-            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            now = str(date_time).strip() if date_time else datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
             try:
                 s_cursor = conn.execute(

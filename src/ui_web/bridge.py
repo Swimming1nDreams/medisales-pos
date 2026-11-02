@@ -28,18 +28,21 @@ class FrontendBridge(QObject):
     # --- Sales ---
     @Slot(str, str, float, result=str)
     @Slot(str, str, float, float, str, str, result=str)
-    def create_sale(self, reference, items_json, amount_received, discount_amount=0, payment_type="cash", customer_id=""):
+    @Slot(str, str, float, float, str, str, str, result=str)
+    def create_sale(self, reference, items_json, amount_received, discount_amount=0, payment_type="cash", customer_id="", date_time=""):
         try:
             items = json.loads(items_json)
             # items: [{'product_id': int, 'quantity': int, 'unit_price': float}]
             cid = int(customer_id) if customer_id and str(customer_id).isdigit() else None
+            dt = str(date_time).strip() if date_time and str(date_time).strip() else None
             sale_id = self.services['sales_service'].create_sale(
                 reference, 
                 items, 
                 int(amount_received),
                 discount_amount=int(discount_amount),
                 payment_type=payment_type,
-                customer_id=cid
+                customer_id=cid,
+                date_time=dt
             )
             self.dataChanged.emit("dashboard")
             self.dataChanged.emit("sales")

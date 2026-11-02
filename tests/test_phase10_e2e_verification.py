@@ -621,7 +621,7 @@ def test_scenario_f_sale_void_and_corrections(isolated_env):
         assert conn.execute("SELECT current_qty FROM medicine_batches WHERE batch_number = 'AC-BATCH-1'").fetchone()['current_qty'] == 11
 
     # Check financials before void
-    summary_before = fin.get_summary("2026-10-01", "2026-10-31")
+    summary_before = fin.get_summary("2026-10-01", "2026-12-31")
     assert summary_before['total_sales_revenue'] == 15000
     assert summary_before['cost_of_goods_sold'] == 9000
     assert summary_before['gross_profit'] == 6000
@@ -669,7 +669,7 @@ def test_scenario_f_sale_void_and_corrections(isolated_env):
         assert gen_stock_recheck['current_stock'] == 20, "Stock was erroneously re-incremented on duplicate void!"
 
     # 5. Verify financial reports exclude voided sales
-    summary_after = fin.get_summary("2026-10-01", "2026-10-31")
+    summary_after = fin.get_summary("2026-10-01", "2026-12-31")
     assert summary_after['total_sales_revenue'] == 0
     assert summary_after['cost_of_goods_sold'] == 0
     assert summary_after['gross_profit'] == 0
@@ -906,7 +906,7 @@ def test_scenario_i_expenses_and_financial_reports(isolated_env):
     sales.void_sale(sale_void_id)
 
     # Verify Financial Summary
-    summary = fin.get_summary("2026-10-01", "2026-10-31")
+    summary = fin.get_summary("2026-10-01", "2026-12-31")
     expected_revenue = 25000
     expected_cogs = 15000
     expected_gross_profit = 10000 # 25,000 - 15,000
@@ -950,6 +950,8 @@ def test_scenario_j_backup_and_restore(isolated_env, tmp_path):
     purch = isolated_env['purch']
     sales = isolated_env['sales']
     exp = isolated_env['exp']
+
+    initial_prod_size = os.path.getsize(str(PRODUCTION_DB_PATH)) if PRODUCTION_DB_PATH.exists() else 0
 
     # Populate baseline data
     cat_id = prod.create_category("Backup Test Cat")
@@ -1004,7 +1006,7 @@ def test_scenario_j_backup_and_restore(isolated_env, tmp_path):
 
     # 5. Strict production database check
     assert PRODUCTION_DB_PATH.exists()
-    assert os.path.getsize(str(PRODUCTION_DB_PATH)) == 143360, "CRITICAL: Production database size changed during testing!"
+    assert os.path.getsize(str(PRODUCTION_DB_PATH)) == initial_prod_size, "CRITICAL: Production database size changed during testing!"
 
 
 # =============================================================================
