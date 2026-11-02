@@ -130,9 +130,9 @@ async function renderDashboard(container) {
                         <div class="text-xs">
                             <span class="font-bold text-amber-950">${t('dash.low_stock_alerts', 'Stock & Safety Notifications')}:</span>
                             <span class="text-amber-900 ml-1">
-                                ${lowStockCount > 0 ? `<span class="font-semibold text-amber-800">${lowStockCount} items low stock</span>` : ''}
+                                ${lowStockCount > 0 ? `<span class="font-semibold text-amber-800">${lowStockCount} ${t('dash.low_stock_unit', 'items low stock')}</span>` : ''}
                                 ${(lowStockCount > 0 && expiringSoonCount > 0) ? ' • ' : ''}
-                                ${expiringSoonCount > 0 ? `<span class="font-semibold text-rose-700">${expiringSoonCount} batch expiring soon</span>` : ''}
+                                ${expiringSoonCount > 0 ? `<span class="font-semibold text-rose-700">${expiringSoonCount} ${t('dash.expiring_soon_unit', 'batch expiring soon')}</span>` : ''}
                             </span>
                         </div>
                     </div>

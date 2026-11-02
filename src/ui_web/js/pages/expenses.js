@@ -67,7 +67,6 @@ async function renderExpenses(container) {
 
                     ${categories.length > 0 ? `
                         <div class="flex items-center gap-1.5 text-xs">
-                            <span class="text-slate-400">|</span>
                             <select class="form-select text-xs py-1 px-2.5 min-w-[160px]" onchange="expenseFilterCategory(this.value)">
                                 <option value="all" ${expenseCategoryFilter === 'all' ? 'selected' : ''}>${t('sales.all_categories', 'All Categories')} (${categories.length})</option>
                                 ${categories.map(c => `<option value="${c}" ${expenseCategoryFilter === c ? 'selected' : ''}>${c} (${formatMoney(catMap[c])})</option>`).join('')}
@@ -126,8 +125,8 @@ async function renderExpenses(container) {
                                     </td>
                                     <td class="td text-right">
                                         ${!isVoid ? `
-                                            <button class="btn btn-sm btn-danger py-1 px-2 text-xs" onclick="voidExpense(${e.id}, '${escapeHtml(e.category)}', ${e.amount})">
-                                                ${t('btn.void', 'Void')}
+                                            <button class="btn btn-sm text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 py-1 px-2.5 text-xs font-semibold whitespace-nowrap" onclick="voidExpense(${e.id}, '${escapeHtml(e.category)}', ${e.amount})">
+                                                ${t('exp.btn_void', 'Void')}
                                             </button>
                                         ` : `<span class="text-[11px] text-slate-400 italic">${t('status.voided', 'Voided')}</span>`}
                                     </td>

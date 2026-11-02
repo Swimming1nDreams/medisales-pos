@@ -376,7 +376,7 @@ window.pmAddItem = function(e) {
     document.getElementById('pm-item-batch').value = '';
     document.getElementById('pm-item-expiry').value = '';
     document.getElementById('pm-medicine-fields').classList.add('hidden');
-    if (unitSel) unitSel.innerHTML = '<option value="1">${t('pur.base_unit', 'Base Unit')}</option>';
+    if (unitSel) unitSel.innerHTML = `<option value="1">${t('pur.base_unit', 'Base Unit')}</option>`;
     
     pmRenderCart();
 };

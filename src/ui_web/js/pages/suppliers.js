@@ -73,7 +73,7 @@ function _renderSuppliersTbody() {
                             </button>
                         ` : `
                             <span class="text-[11px] text-emerald-700 font-medium px-2 py-0.5 bg-emerald-50 rounded border border-emerald-200">
-                                ${t('status.completed', 'Settled')}
+                                ${t('sup.status_cleared', 'Settled')}
                             </span>
                         `}
                         <button class="btn btn-sm btn-secondary py-1 px-2 text-xs" onclick="editSupplier(${s.id})">
@@ -130,7 +130,7 @@ async function renderSuppliers(container) {
                         <input type="text" 
                                id="supplier-search"
                                class="form-input text-xs pl-8 pr-3 py-1.5 w-full" 
-                               placeholder="${t('prod.filter_search', 'Search vendor name, phone, address...')}"
+                               placeholder="${t('sup.search_placeholder', 'Search vendor name, phone, address...')}"
                                value="${escapeHtml(supplierSearchTerm)}"
                                oninput="handleSupplierSearch(this.value)">
                         <svg class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

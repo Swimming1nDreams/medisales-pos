@@ -119,14 +119,22 @@ function updateNavState() {
             
             const badgeEl = document.getElementById('page-badge');
             if (badgeEl) {
-                badgeEl.textContent = p.groupBadge || t('badge.dispensing', 'DISPENSING');
-                if (p.id === 'dashboard' || p.id === 'sales' || p.id === 'products' || p.id === 'inventory') {
-                    badgeEl.className = "text-[10px] font-bold uppercase tracking-wider text-teal-800 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200/80 whitespace-nowrap flex-shrink-0";
-                } else if (p.id === 'purchases' || p.id === 'suppliers' || p.id === 'customers' || p.id === 'expenses') {
-                    badgeEl.className = "text-[10px] font-bold uppercase tracking-wider text-indigo-800 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200/80 whitespace-nowrap flex-shrink-0";
-                } else {
-                    badgeEl.className = "text-[10px] font-bold uppercase tracking-wider text-purple-800 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200/80 whitespace-nowrap flex-shrink-0";
-                }
+                const pageBadges = {
+                    dashboard: { en: 'OVERVIEW', my: 'ပင်မ', cls: 'text-teal-800 bg-teal-50 border-teal-200/80' },
+                    sales: { en: 'CASHIER', my: 'အရောင်း', cls: 'text-emerald-800 bg-emerald-50 border-emerald-200/80' },
+                    products: { en: 'CATALOG', my: 'ပစ္စည်းများ', cls: 'text-sky-800 bg-sky-50 border-sky-200/80' },
+                    inventory: { en: 'STOCK', my: 'လက်ကျန်', cls: 'text-violet-800 bg-violet-50 border-violet-200/80' },
+                    purchases: { en: 'PURCHASE', my: 'အဝယ်', cls: 'text-indigo-800 bg-indigo-50 border-indigo-200/80' },
+                    suppliers: { en: 'VENDORS', my: 'ကုန်သွင်းသူ', cls: 'text-amber-800 bg-amber-50 border-amber-200/80' },
+                    customers: { en: 'CREDIT BOOK', my: 'အကြွေးစာရင်း', cls: 'text-rose-800 bg-rose-50 border-rose-200/80' },
+                    expenses: { en: 'EXPENSES', my: 'ဆိုင်သုံးစရိတ်', cls: 'text-orange-800 bg-orange-50 border-orange-200/80' },
+                    reports: { en: 'REPORTS', my: 'အစီရင်ခံစာ', cls: 'text-cyan-800 bg-cyan-50 border-cyan-200/80' },
+                    settings: { en: 'SETTINGS', my: 'ဆက်တင်များ', cls: 'text-slate-800 bg-slate-50 border-slate-200/80' }
+                };
+                const lang = getLanguage();
+                const pb = pageBadges[p.id] || { en: 'SAY MAHAR', my: 'ဆေးမဟာ', cls: 'text-teal-800 bg-teal-50 border-teal-200/80' };
+                badgeEl.textContent = lang === 'my' ? pb.my : pb.en;
+                badgeEl.className = `text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border whitespace-nowrap flex-shrink-0 ${pb.cls}`;
             }
 
             const titleEl = document.getElementById('page-title');
